@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Web_store.Common\Web_store.Common.csproj" />
     <ProjectReference Include="..\Web_Store.Domain\Web_Store.Domain.csproj" />
   </ItemGroup>
 

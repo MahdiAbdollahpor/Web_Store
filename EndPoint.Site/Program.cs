@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Web_Store.Application.Interfaces.Contexts;
+using Web_Store.Application.Services.Users.Queries.GetRoles;
+using Web_Store.Application.Services.Users.Queries.GetUsers;
 using Web_Store.Persistence.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +11,9 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<DataBaseContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection")));
 
+builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
+builder.Services.AddScoped<IGetUsersService, GetUsersService>();
+builder.Services.AddScoped<IGetRolesService, GetRolesService>();
 
 var app = builder.Build();
 
