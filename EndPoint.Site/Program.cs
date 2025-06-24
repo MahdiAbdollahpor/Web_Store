@@ -1,5 +1,12 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Web_store.Common.Roles;
 using Web_Store.Application.Interfaces.Contexts;
+using Web_Store.Application.Services.Users.Commands.EditUser;
+using Web_Store.Application.Services.Users.Commands.RemoveUser;
+using Web_Store.Application.Services.Users.Commands.RgegisterUser;
+using Web_Store.Application.Services.Users.Commands.UserLogin;
+using Web_Store.Application.Services.Users.Commands.UserSatusChange;
 using Web_Store.Application.Services.Users.Queries.GetRoles;
 using Web_Store.Application.Services.Users.Queries.GetUsers;
 using Web_Store.Persistence.Contexts;
@@ -9,11 +16,35 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(UserRoles.Admin, policy => policy.RequireRole(UserRoles.Admin));
+    options.AddPolicy(UserRoles.Customer, policy => policy.RequireRole(UserRoles.Customer));
+    options.AddPolicy(UserRoles.Operator, policy => policy.RequireRole(UserRoles.Operator));
+});
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+}).AddCookie(options =>
+{
+    options.LoginPath = new PathString("/Authentication/Signin");
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5.0);
+    options.AccessDeniedPath = new PathString("/Authentication/Signin");
+});
+
 builder.Services.AddDbContext<DataBaseContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection")));
 
 builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
 builder.Services.AddScoped<IGetUsersService, GetUsersService>();
 builder.Services.AddScoped<IGetRolesService, GetRolesService>();
+builder.Services.AddScoped<IRegisterUserService, RegisterUserService>();
+builder.Services.AddScoped<IRemoveUserService, RemoveUserService>();
+builder.Services.AddScoped<IUserLoginService, UserLoginService>();
+builder.Services.AddScoped<IUserSatusChangeService, UserSatusChangeService>();
+builder.Services.AddScoped<IEditUserService, EditUserService>();
 
 var app = builder.Build();
 
