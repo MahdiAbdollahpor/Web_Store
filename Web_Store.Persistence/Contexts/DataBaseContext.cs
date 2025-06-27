@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Web_store.Common.Roles;
 using Web_Store.Application.Interfaces.Contexts;
+using Web_Store.Domain.Entities.Products;
 using Web_Store.Domain.Entities.Users;
 
 namespace Web_Store.Persistence.Contexts
@@ -18,6 +19,7 @@ namespace Web_Store.Persistence.Contexts
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserInRole> UserInRoles { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,7 +40,7 @@ namespace Web_Store.Persistence.Contexts
             modelBuilder.Entity<User>().HasQueryFilter(p => !p.IsRemoved);
             modelBuilder.Entity<Role>().HasQueryFilter(p => !p.IsRemoved);
             modelBuilder.Entity<UserInRole>().HasQueryFilter(p => !p.IsRemoved);
-            //modelBuilder.Entity<Category>().HasQueryFilter(p => !p.IsRemoved);
+            modelBuilder.Entity<Category>().HasQueryFilter(p => !p.IsRemoved);
             //modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsRemoved);
             //modelBuilder.Entity<ProductImages>().HasQueryFilter(p => !p.IsRemoved);
             //modelBuilder.Entity<ProductFeatures>().HasQueryFilter(p => !p.IsRemoved);
