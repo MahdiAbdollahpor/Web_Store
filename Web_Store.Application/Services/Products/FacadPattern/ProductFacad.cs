@@ -14,6 +14,7 @@ using Web_Store.Application.Services.Products.Queries.GetCategories;
 using Web_Store.Application.Services.Products.Queries.GetProductDetailForAdmin;
 using Web_Store.Application.Services.Products.Queries.GetProductDetailForSite;
 using Web_Store.Application.Services.Products.Queries.GetProductForAdmin;
+using Web_Store.Application.Services.Products.Queries.GetProductForSite;
 
 namespace Web_Store.Application.Services.Products.FacadPattern
 {
@@ -92,6 +93,14 @@ namespace Web_Store.Application.Services.Products.FacadPattern
             }
         }
 
+        private IGetProductForSiteService _getProductForSiteService;
+        public IGetProductForSiteService GetProductForSiteService
+        {
+            get
+            {
+                return _getProductForSiteService = _getProductForSiteService ?? new GetProductForSiteService(_context);
+            }
+        }
 
     }
 }

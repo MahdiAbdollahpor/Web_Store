@@ -10,6 +10,7 @@ using Web_Store.Application.Services.Products.Queries.GetCategories;
 using Web_Store.Application.Services.Products.Queries.GetProductDetailForAdmin;
 using Web_Store.Application.Services.Products.Queries.GetProductDetailForSite;
 using Web_Store.Application.Services.Products.Queries.GetProductForAdmin;
+using Web_Store.Application.Services.Products.Queries.GetProductForSite;
 
 namespace Web_Store.Application.Interfaces.FacadPatterns
 {
@@ -24,7 +25,7 @@ namespace Web_Store.Application.Interfaces.FacadPatterns
         /// </summary>
         IGetProductForAdminService GetProductForAdminService { get; }
         IGetProductDetailForAdminService GetProductDetailForAdminService { get; }
-        //IGetProductForSiteService GetProductForSiteService { get; }
+        IGetProductForSiteService GetProductForSiteService { get; }
         IGetProductDetailForSiteService GetProductDetailForSiteService { get; }
     }
 }
