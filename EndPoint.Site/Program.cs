@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Web_store.Common.Roles;
 using Web_Store.Application.Interfaces.Contexts;
 using Web_Store.Application.Interfaces.FacadPatterns;
+using Web_Store.Application.Services.Common.Queries.GetCategory;
 using Web_Store.Application.Services.Common.Queries.GetMenuItem;
 using Web_Store.Application.Services.Products.FacadPattern;
 using Web_Store.Application.Services.Users.Commands.EditUser;
@@ -49,6 +50,7 @@ builder.Services.AddScoped<IUserLoginService, UserLoginService>();
 builder.Services.AddScoped<IUserSatusChangeService, UserSatusChangeService>();
 builder.Services.AddScoped<IEditUserService, EditUserService>();
 builder.Services.AddScoped<IGetMenuItemService, GetMenuItemService>();
+builder.Services.AddScoped<IGetCategoryService, GetCategoryService>();
 
 //FacadeInject
 builder.Services.AddScoped<IProductFacad, ProductFacad>();
