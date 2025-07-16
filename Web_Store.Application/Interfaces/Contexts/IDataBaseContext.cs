@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Web_Store.Domain.Entities.HomePages;
 using Web_Store.Domain.Entities.Products;
 using Web_Store.Domain.Entities.Users;
 
@@ -18,7 +19,8 @@ namespace Web_Store.Application.Interfaces.Contexts
         DbSet<Product> Products { get; set; }
         DbSet<ProductImages> ProductImages { get; set; }
         DbSet<ProductFeatures> ProductFeatures { get; set; }
-
+        DbSet<Slider> Sliders { get; set; }
+        DbSet<HomePageImages> HomePageImages { get; set; }
 
 
 

@@ -4,7 +4,11 @@ using Web_store.Common.Roles;
 using Web_Store.Application.Interfaces.Contexts;
 using Web_Store.Application.Interfaces.FacadPatterns;
 using Web_Store.Application.Services.Common.Queries.GetCategory;
+using Web_Store.Application.Services.Common.Queries.GetHomePageImages;
 using Web_Store.Application.Services.Common.Queries.GetMenuItem;
+using Web_Store.Application.Services.Common.Queries.GetSlider;
+using Web_Store.Application.Services.HomePages.AddHomePageImages;
+using Web_Store.Application.Services.HomePages.AddNewSlider;
 using Web_Store.Application.Services.Products.FacadPattern;
 using Web_Store.Application.Services.Users.Commands.EditUser;
 using Web_Store.Application.Services.Users.Commands.RemoveUser;
@@ -51,6 +55,11 @@ builder.Services.AddScoped<IUserSatusChangeService, UserSatusChangeService>();
 builder.Services.AddScoped<IEditUserService, EditUserService>();
 builder.Services.AddScoped<IGetMenuItemService, GetMenuItemService>();
 builder.Services.AddScoped<IGetCategoryService, GetCategoryService>();
+builder.Services.AddScoped<IAddNewSliderService, AddNewSliderService>();
+builder.Services.AddScoped<IAddHomePageImagesService, AddHomePageImagesService>();
+builder.Services.AddScoped<IGetSliderService, GetSliderService>();
+builder.Services.AddScoped<IGetHomePageImagesService, GetHomePageImagesService>();
+
 
 //FacadeInject
 builder.Services.AddScoped<IProductFacad, ProductFacad>();

@@ -1,21 +1,42 @@
 using EndPoint.Site.Models;
+using EndPoint.Site.Models.ViewModels.HomePages;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Web_Store.Application.Interfaces.FacadPatterns;
+using Web_Store.Application.Services.Common.Queries.GetHomePageImages;
+using Web_Store.Application.Services.Common.Queries.GetSlider;
+using Web_Store.Application.Services.Products.Queries.GetProductForSite;
 
 namespace EndPoint.Site.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IGetSliderService _getSliderService;
+        private readonly IGetHomePageImagesService _homePageImagesService;
+        private readonly IProductFacad _productFacad;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger
+            , IGetSliderService getSliderService
+            , IGetHomePageImagesService homePageImagesService
+            , IProductFacad productFacad)
         {
             _logger = logger;
+            _getSliderService = getSliderService;
+            _homePageImagesService = homePageImagesService;
+            _productFacad = productFacad;
         }
 
         public IActionResult Index()
         {
-            return View();
+            HomePageViewModel homePage = new HomePageViewModel()
+            {
+                Sliders = _getSliderService.Execute().Data,
+                PageImages = _homePageImagesService.Execute().Data,
+                Camera = _productFacad.GetProductForSiteService.Execute(Ordering.theNewest
+               , null, 1, 6, 25).Data.Products,
+            };
+            return View(homePage);
         }
 
         public IActionResult Privacy()
