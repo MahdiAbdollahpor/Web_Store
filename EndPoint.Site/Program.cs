@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Web_store.Common.Roles;
 using Web_Store.Application.Interfaces.Contexts;
 using Web_Store.Application.Interfaces.FacadPatterns;
+using Web_Store.Application.Services.Carts;
 using Web_Store.Application.Services.Common.Queries.GetCategory;
 using Web_Store.Application.Services.Common.Queries.GetHomePageImages;
 using Web_Store.Application.Services.Common.Queries.GetMenuItem;
@@ -59,6 +60,7 @@ builder.Services.AddScoped<IAddNewSliderService, AddNewSliderService>();
 builder.Services.AddScoped<IAddHomePageImagesService, AddHomePageImagesService>();
 builder.Services.AddScoped<IGetSliderService, GetSliderService>();
 builder.Services.AddScoped<IGetHomePageImagesService, GetHomePageImagesService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 
 //FacadeInject
