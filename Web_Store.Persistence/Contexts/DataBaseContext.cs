@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Web_store.Common.Roles;
 using Web_Store.Application.Interfaces.Contexts;
+using Web_Store.Domain.Entities.Carts;
 using Web_Store.Domain.Entities.HomePages;
 using Web_Store.Domain.Entities.Products;
 using Web_Store.Domain.Entities.Users;
@@ -26,6 +27,8 @@ namespace Web_Store.Persistence.Contexts
         public DbSet<ProductFeatures> ProductFeatures { get; set; }
         public DbSet<Slider> Sliders { get; set; }
         public DbSet<HomePageImages> HomePageImages { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,8 +55,8 @@ namespace Web_Store.Persistence.Contexts
             modelBuilder.Entity<ProductFeatures>().HasQueryFilter(p => !p.IsRemoved);
             modelBuilder.Entity<Slider>().HasQueryFilter(p => !p.IsRemoved);
             modelBuilder.Entity<HomePageImages>().HasQueryFilter(p => !p.IsRemoved);
-            //modelBuilder.Entity<Cart>().HasQueryFilter(p => !p.IsRemoved);
-            //modelBuilder.Entity<CartItem>().HasQueryFilter(p => !p.IsRemoved);
+            modelBuilder.Entity<Cart>().HasQueryFilter(p => !p.IsRemoved);
+            modelBuilder.Entity<CartItem>().HasQueryFilter(p => !p.IsRemoved);
             //modelBuilder.Entity<RequestPay>().HasQueryFilter(p => !p.IsRemoved);
             //modelBuilder.Entity<Order>().HasQueryFilter(p => !p.IsRemoved);
             //modelBuilder.Entity<OrderDetail>().HasQueryFilter(p => !p.IsRemoved);
