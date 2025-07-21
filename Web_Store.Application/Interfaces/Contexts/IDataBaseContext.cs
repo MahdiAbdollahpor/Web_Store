@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Web_Store.Domain.Entities.Carts;
+using Web_Store.Domain.Entities.Finances;
 using Web_Store.Domain.Entities.HomePages;
 using Web_Store.Domain.Entities.Products;
 using Web_Store.Domain.Entities.Users;
@@ -24,7 +25,7 @@ namespace Web_Store.Application.Interfaces.Contexts
         DbSet<HomePageImages> HomePageImages { get; set; }
         DbSet<Cart> Carts { get; set; }
         DbSet<CartItem> CartItems { get; set; }
-
+        DbSet<RequestPay> RequestPays { get; set; }
 
 
         int SaveChanges(bool acceptAllChangesOnSuccess);

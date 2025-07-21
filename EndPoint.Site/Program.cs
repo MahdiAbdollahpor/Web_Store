@@ -8,6 +8,9 @@ using Web_Store.Application.Services.Common.Queries.GetCategory;
 using Web_Store.Application.Services.Common.Queries.GetHomePageImages;
 using Web_Store.Application.Services.Common.Queries.GetMenuItem;
 using Web_Store.Application.Services.Common.Queries.GetSlider;
+using Web_Store.Application.Services.Fainances.Commands.AddRequestPay;
+using Web_Store.Application.Services.Fainances.Queries.GetRequestPayForAdmin;
+using Web_Store.Application.Services.Fainances.Queries.GetRequestPayService;
 using Web_Store.Application.Services.HomePages.AddHomePageImages;
 using Web_Store.Application.Services.HomePages.AddNewSlider;
 using Web_Store.Application.Services.Products.FacadPattern;
@@ -61,6 +64,9 @@ builder.Services.AddScoped<IAddHomePageImagesService, AddHomePageImagesService>(
 builder.Services.AddScoped<IGetSliderService, GetSliderService>();
 builder.Services.AddScoped<IGetHomePageImagesService, GetHomePageImagesService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IAddRequestPayService, AddRequestPayService>();
+builder.Services.AddScoped<IGetRequestPayService, GetRequestPayService>();
+builder.Services.AddScoped<IGetRequestPayForAdminService, GetRequestPayForAdminService>();
 
 
 //FacadeInject
@@ -81,6 +87,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
