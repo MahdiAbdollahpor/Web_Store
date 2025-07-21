@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Web_Store.Application.Services.Carts;
 using Web_Store.Application.Services.Fainances.Commands.AddRequestPay;
 using Web_Store.Application.Services.Fainances.Queries.GetRequestPayService;
+using Web_Store.Application.Services.Orders.Commands.AddNewOrder;
 using ZarinPal.Class;
 
 namespace EndPoint.Site.Controllers
@@ -19,12 +20,13 @@ namespace EndPoint.Site.Controllers
         private readonly Authority _authority;
         private readonly Transactions _transactions;
         private readonly IGetRequestPayService _getRequestPayService;
+        private readonly IAddNewOrderService _addNewOrderService;
 
 
         public PayController(IAddRequestPayService addRequestPayService
             , ICartService cartService
             , IGetRequestPayService getRequestPayService
-
+            , IAddNewOrderService addNewOrderService
              )
         {
             _addRequestPayService = addRequestPayService;
@@ -35,6 +37,7 @@ namespace EndPoint.Site.Controllers
             _authority = expose.CreateAuthority();
             _transactions = expose.CreateTransactions();
             _getRequestPayService = getRequestPayService;
+            _addNewOrderService = addNewOrderService;
         }
 
         public async Task<IActionResult> Index()
@@ -89,22 +92,22 @@ namespace EndPoint.Site.Controllers
             long? UserId = ClaimUtility.GetUserId(User);
             var cart = _cartService.GetMyCart(_cookiesManeger.GetBrowserId(HttpContext), UserId);
 
-            //if (verification.Status == 100)
-            //{
-            //    _addNewOrderService.Execute(new RequestAddNewOrderSericeDto
-            //    {
-            //        CartId = cart.Data.CartId,
-            //        UserId = UserId.Value,
-            //        RequestPayId = requestPay.Data.Id
-            //    });
+            if (verification.Status == 100)
+            {
+                _addNewOrderService.Execute(new RequestAddNewOrderSericeDto
+                {
+                    CartId = cart.Data.CartId,
+                    UserId = UserId.Value,
+                    RequestPayId = requestPay.Data.Id
+                });
 
-            //    //redirect to orders
-            //    return RedirectToAction("Index", "Orders");
-            //}
-            //else
-            //{
+                //redirect to orders
+                return RedirectToAction("Index", "Orders");
+            }
+            else
+            {
 
-            //}
+            }
 
             return View();
         }
@@ -119,4 +122,4 @@ namespace EndPoint.Site.Controllers
 
 
 }
-}
+

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Web_Store.Domain.Entities.Commons;
+using Web_Store.Domain.Entities.Orders;
 
 namespace Web_Store.Domain.Entities.Users
 {
@@ -14,5 +15,6 @@ namespace Web_Store.Domain.Entities.Users
         public string Password { get; set; }
         public bool IsActive { get; set; }
         public ICollection<UserInRole> UserInRoles { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

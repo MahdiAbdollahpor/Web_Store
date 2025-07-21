@@ -13,6 +13,9 @@ using Web_Store.Application.Services.Fainances.Queries.GetRequestPayForAdmin;
 using Web_Store.Application.Services.Fainances.Queries.GetRequestPayService;
 using Web_Store.Application.Services.HomePages.AddHomePageImages;
 using Web_Store.Application.Services.HomePages.AddNewSlider;
+using Web_Store.Application.Services.Orders.Commands.AddNewOrder;
+using Web_Store.Application.Services.Orders.Queries.GetOrdersForAdmin;
+using Web_Store.Application.Services.Orders.Queries.GetUserOrders;
 using Web_Store.Application.Services.Products.FacadPattern;
 using Web_Store.Application.Services.Users.Commands.EditUser;
 using Web_Store.Application.Services.Users.Commands.RemoveUser;
@@ -67,6 +70,9 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IAddRequestPayService, AddRequestPayService>();
 builder.Services.AddScoped<IGetRequestPayService, GetRequestPayService>();
 builder.Services.AddScoped<IGetRequestPayForAdminService, GetRequestPayForAdminService>();
+builder.Services.AddScoped<IAddNewOrderService, AddNewOrderService>();
+builder.Services.AddScoped<IGetUserOrdersService, GetUserOrdersService>();
+builder.Services.AddScoped<IGetOrdersForAdminService, GetOrdersForAdminService>();
 
 
 //FacadeInject

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Web_Store.Domain.Entities.Commons;
+using Web_Store.Domain.Entities.Orders;
 using Web_Store.Domain.Entities.Users;
 
 namespace Web_Store.Domain.Entities.Finances
@@ -18,5 +19,6 @@ namespace Web_Store.Domain.Entities.Finances
         public DateTime? PayDate { get; set; }
         public string Authority { get; set; }
         public long RefId { get; set; } = 0;
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }
