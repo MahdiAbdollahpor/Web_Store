@@ -1,4 +1,4 @@
-﻿@* @using EndPoint.Site.Utilities; *@
+﻿ @using EndPoint.Site.Utilities; 
 @{
     Layout = null;
 }
@@ -81,7 +81,7 @@
                             </ul>
                         </li>
 
-                       @*  @if (ClaimUtility.GetRolse(User).Where(p => p == "Operator").Count() >= 1)
+                        @if (ClaimUtility.GetRolse(User).Where(p => p == "Operator").Count() >= 1)
                         {
                             <li class="has-sub nav-item">
                                 <a href="#"><i class="icon-crop"></i><span data-i18n="" class="menu-title">  دسته بندی ها </span></a>
@@ -95,7 +95,7 @@
                                 </ul>
                             </li>
 
-                        } *@
+                        }
 
                         <li class="has-sub nav-item">
                             <a href="#"><i class="icon-crop"></i><span data-i18n="" class="menu-title"> محصولات </span></a>
