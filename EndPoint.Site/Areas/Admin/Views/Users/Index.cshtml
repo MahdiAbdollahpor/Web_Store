@@ -106,7 +106,7 @@
                         contentType: 'application/x-www-form-urlencoded',
                         dataType: 'json',
                         type: "POST",
-                        url: "Delete",
+                        url: "/Admin/Users/Delete",
                         data: postData,
                         success: function (data) {
                             if (data.isSuccess == true) {
@@ -160,7 +160,7 @@
                         contentType: 'application/x-www-form-urlencoded',
                         dataType: 'json',
                         type: "POST",
-                        url: "UserSatusChange",
+                        url: "/Admin/Users/UserSatusChange",
                         data: postData,
                         success: function (data) {
                             if (data.isSuccess == true) {
@@ -200,7 +200,7 @@
 
             var postData = {
                 'UserId': userId,
-                'FullName': fullName,
+                'Fullname': fullName,
             };
 
 
@@ -208,7 +208,7 @@
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
                 type: "POST",
-                url: "Edit",
+                url: "/Admin/Users/Edit",
                 data: postData,
                 success: function (data) {
                     if (data.isSuccess == true) {

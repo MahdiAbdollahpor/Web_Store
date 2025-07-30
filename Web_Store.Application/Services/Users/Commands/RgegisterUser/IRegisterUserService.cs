@@ -40,6 +40,15 @@ namespace Web_Store.Application.Services.Users.Commands.RgegisterUser
                         Message = "پست الکترونیک را وارد نمایید"
                     };
                 }
+                if (_context.Users.Any(u => u.Email == request.Email))
+                {
+                    return new ResultDto<ResultRegisterUserDto>
+                    {
+                        Data = new ResultRegisterUserDto { UserId = 0 },
+                        IsSuccess = false,
+                        Message = "ایمیل قبلاً ثبت شده است."
+                    };
+                }
 
                 if (string.IsNullOrWhiteSpace(request.FullName))
                 {
@@ -77,7 +86,7 @@ namespace Web_Store.Application.Services.Users.Commands.RgegisterUser
                         Message = "رمز عبور و تکرار آن برابر نیست"
                     };
                 }
-                string emailRegex = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$";
+                string emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
 
                 var match = Regex.Match(request.Email, emailRegex, RegexOptions.IgnoreCase);
                 if (!match.Success)
@@ -105,11 +114,24 @@ namespace Web_Store.Application.Services.Users.Commands.RgegisterUser
                     IsActive = true,
                 };
 
+                _context.Users.Add(user);
+
+                _context.SaveChanges();
+
                 List<UserInRole> userInRoles = new List<UserInRole>();
 
                 foreach (var item in request.roles)
                 {
                     var roles = _context.Roles.Find(item.Id);
+                    if (roles == null)
+                    {
+                        return new ResultDto<ResultRegisterUserDto>
+                        {
+                            Data = new ResultRegisterUserDto { UserId = 0 },
+                            IsSuccess = false,
+                            Message = $"نقش با شناسه {item.Id} یافت نشد."
+                        };
+                    }
                     userInRoles.Add(new UserInRole
                     {
                         Role = roles,
@@ -120,9 +142,9 @@ namespace Web_Store.Application.Services.Users.Commands.RgegisterUser
                 }
                 user.UserInRoles = userInRoles;
 
-                _context.Users.Add(user);
+               
 
-                _context.SaveChanges();
+               
 
                 return new ResultDto<ResultRegisterUserDto>()
                 {

@@ -22,7 +22,7 @@ namespace Web_Store.Application.Services.Users.Queries.GetUsers
             var users = _context.Users.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.SearchKey))
             {
-                users = users.Where(p => p.FullName.Contains(request.SearchKey) && p.Email.Contains(request.SearchKey));
+                users = users.Where(p => p.FullName.Contains(request.SearchKey) || p.Email.Contains(request.SearchKey));
             }
             int rowsCount = 0;
             var usersList = users.ToPaged(request.Page, 20, out rowsCount).Select(p => new GetUsersDto
