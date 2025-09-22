@@ -1,15 +1,14 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Web_Store.Application.Interfaces.Contexts;
 using Web_store.Common.Dto;
 using Web_Store.Domain.Entities.Products;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting; // استفاده از این namespace
 using Microsoft.AspNetCore.Http;
-
 
 namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
 {
@@ -18,34 +17,34 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
         ResultDto Execute(RequestAddNewProductDto request);
     }
 
-
     public class AddNewProductService : IAddNewProductService
     {
         private readonly IDataBaseContext _context;
-        private readonly IHostingEnvironment _environment;
-        private IDataBaseContext context;
-        private Microsoft.Extensions.Hosting.IHostingEnvironment environment;
+        private readonly IWebHostEnvironment _environment;
 
-        public AddNewProductService(IDataBaseContext context, IHostingEnvironment hostingEnvironment)
+        
+        public AddNewProductService(IDataBaseContext context, IWebHostEnvironment environment)
         {
             _context = context;
-            _environment = hostingEnvironment;
-        }
-
-        public AddNewProductService(IDataBaseContext context, Microsoft.Extensions.Hosting.IHostingEnvironment environment)
-        {
-            this.context = context;
-            this.environment = environment;
+            _environment = environment;
         }
 
         public ResultDto Execute(RequestAddNewProductDto request)
         {
-
             try
             {
-
+                // بررسی وجود دسته‌بندی
                 var category = _context.Categories.Find(request.CategoryId);
+                if (category == null)
+                {
+                    return new ResultDto
+                    {
+                        IsSuccess = false,
+                        Message = "دسته‌بندی یافت نشد",
+                    };
+                }
 
+                // ایجاد محصول جدید
                 Product product = new Product()
                 {
                     Brand = request.Brand,
@@ -58,20 +57,27 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
                 };
                 _context.Products.Add(product);
 
+                // آپلود و ذخیره تصاویر
                 List<ProductImages> productImages = new List<ProductImages>();
                 foreach (var item in request.Images)
                 {
                     var uploadedResult = UploadFile(item);
-                    productImages.Add(new ProductImages
+                    if (uploadedResult.Status)
                     {
-                        Product = product,
-                        Src = uploadedResult.FileNameAddress,
-                    });
+                        productImages.Add(new ProductImages
+                        {
+                            Product = product,
+                            Src = uploadedResult.FileNameAddress,
+                        });
+                    }
                 }
 
-                _context.ProductImages.AddRange(productImages);
+                if (productImages.Any())
+                {
+                    _context.ProductImages.AddRange(productImages);
+                }
 
-
+                // افزودن ویژگی‌های محصول
                 List<ProductFeatures> productFeatures = new List<ProductFeatures>();
                 foreach (var item in request.Features)
                 {
@@ -94,41 +100,32 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
             }
             catch (Exception ex)
             {
-
                 return new ResultDto
                 {
                     IsSuccess = false,
-                    Message = "خطا رخ داد ",
+                    Message = "خطا رخ داد: " + ex.Message,
                 };
             }
-
         }
-
 
         private UploadDto UploadFile(IFormFile file)
         {
-            
-            if (file != null)
+            if (file != null && file.Length > 0 && _environment != null)
             {
-                string folder = $@"images\ProductImages\";
+                string folder = @"images/ProductImages/";
                 var uploadsRootFolder = Path.Combine(_environment.WebRootPath, folder);
+
+                // ایجاد پوشه اگر وجود ندارد
                 if (!Directory.Exists(uploadsRootFolder))
                 {
                     Directory.CreateDirectory(uploadsRootFolder);
                 }
 
-
-                if (file == null || file.Length == 0)
-                {
-                    return new UploadDto()
-                    {
-                        Status = false,
-                        FileNameAddress = "",
-                    };
-                }
-
-                string fileName = DateTime.Now.Ticks.ToString() + file.FileName;
+                // تولید نام فایل منحصر به فرد
+                string fileName = $"{DateTime.Now.Ticks}_{Path.GetFileName(file.FileName)}";
                 var filePath = Path.Combine(uploadsRootFolder, fileName);
+
+                // ذخیره فایل
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     file.CopyTo(fileStream);
@@ -136,19 +133,26 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
 
                 return new UploadDto()
                 {
-                    FileNameAddress = folder + fileName,
+                    FileNameAddress = Path.Combine(folder, fileName).Replace("\\", "/"),
                     Status = true,
                 };
             }
-            return null;
+
+            return new UploadDto()
+            {
+                Status = false,
+                FileNameAddress = "",
+            };
         }
     }
+
     public class UploadDto
     {
         public long Id { get; set; }
         public bool Status { get; set; }
         public string FileNameAddress { get; set; }
     }
+
     public class RequestAddNewProductDto
     {
         public string Name { get; set; }
@@ -158,7 +162,6 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
         public int Inventory { get; set; }
         public long CategoryId { get; set; }
         public bool Displayed { get; set; }
-
         public List<IFormFile> Images { get; set; }
         public List<AddNewProduct_Features> Features { get; set; }
     }

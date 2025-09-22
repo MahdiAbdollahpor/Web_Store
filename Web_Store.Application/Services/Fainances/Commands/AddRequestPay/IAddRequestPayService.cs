@@ -31,6 +31,7 @@ namespace Web_Store.Application.Services.Fainances.Commands.AddRequestPay
                 Guid = Guid.NewGuid(),
                 IsPay = false,
                 User = user,
+                Authority = "" // مقدار پیش فرض یا موقت
 
             };
             _context.RequestPays.Add(requestPay);

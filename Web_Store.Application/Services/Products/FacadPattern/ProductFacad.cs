@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -21,12 +22,12 @@ namespace Web_Store.Application.Services.Products.FacadPattern
     public class ProductFacad : IProductFacad
     {
         private readonly IDataBaseContext _context;
-        private readonly IHostingEnvironment _environment;
-        public ProductFacad(IDataBaseContext context, IHostingEnvironment hostingEnvironment)
+        private readonly IWebHostEnvironment _environment;
+
+        public ProductFacad(IDataBaseContext context, IWebHostEnvironment environment)
         {
             _context = context;
-            _environment = hostingEnvironment;
-
+            _environment = environment;
         }
 
         private AddNewCategoryService _addNewCategory;

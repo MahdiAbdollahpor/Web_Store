@@ -1,99 +1,93 @@
-﻿using Dto.Payment;
-using EndPoint.Site.Utilities;
-using Microsoft.AspNetCore.Authorization;
+﻿using EndPoint.Site.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Web_Store.Application.Services.Carts;
 using Web_Store.Application.Services.Fainances.Commands.AddRequestPay;
+using Web_Store.Application.Services.Fainances.Commands.ZarinPalService;
 using Web_Store.Application.Services.Fainances.Queries.GetRequestPayService;
 using Web_Store.Application.Services.Orders.Commands.AddNewOrder;
-using ZarinPal.Class;
+using Web_Store.Domain.Entities.Users;
 
-namespace EndPoint.Site.Controllers
+public class PayController : Controller
 {
-    [Authorize]
-    public class PayController : Controller
+    private readonly ZarinPalService _zarinPalService;
+    private readonly IAddRequestPayService _addRequestPayService;
+    private readonly ICartService _cartService;
+    private readonly CookiesManeger _cookiesManeger;
+    private readonly IGetRequestPayService _getRequestPayService;
+    private readonly IAddNewOrderService _addNewOrderService;
+
+    public PayController(
+        ZarinPalService zarinPalService,
+        IAddRequestPayService addRequestPayService,
+        ICartService cartService,
+        IGetRequestPayService getRequestPayService,
+        IAddNewOrderService addNewOrderService)
     {
-        private readonly IAddRequestPayService _addRequestPayService;
-        private readonly ICartService _cartService;
-        private readonly CookiesManeger _cookiesManeger;
-        private readonly Payment _payment;
-        private readonly Authority _authority;
-        private readonly Transactions _transactions;
-        private readonly IGetRequestPayService _getRequestPayService;
-        private readonly IAddNewOrderService _addNewOrderService;
+        _zarinPalService = zarinPalService;
+        _addRequestPayService = addRequestPayService;
+        _cartService = cartService;
+        _cookiesManeger = new CookiesManeger();
+        _getRequestPayService = getRequestPayService;
+        _addNewOrderService = addNewOrderService;
+    }
 
+    public async Task<IActionResult> Index()
+    {
+        long? UserId = ClaimUtility.GetUserId(User);
+        var cart = _cartService.GetMyCart(_cookiesManeger.GetBrowserId(HttpContext), UserId);
 
-        public PayController(IAddRequestPayService addRequestPayService
-            , ICartService cartService
-            , IGetRequestPayService getRequestPayService
-            , IAddNewOrderService addNewOrderService
-             )
+        if (cart.Data.SumAmount > 1000) // حداقل amount
         {
-            _addRequestPayService = addRequestPayService;
-            _cartService = cartService;
-            _cookiesManeger = new CookiesManeger();
-            var expose = new Expose();
-            _payment = expose.CreatePayment();
-            _authority = expose.CreateAuthority();
-            _transactions = expose.CreateTransactions();
-            _getRequestPayService = getRequestPayService;
-            _addNewOrderService = addNewOrderService;
-        }
+            var requestPay = _addRequestPayService.Execute(cart.Data.SumAmount, UserId.Value);
 
-        public async Task<IActionResult> Index()
-        {
-            long? UserId = ClaimUtility.GetUserId(User);
-            var cart = _cartService.GetMyCart(_cookiesManeger.GetBrowserId(HttpContext), UserId);
-            if (cart.Data.SumAmount > 0)
+            try
             {
-                var requestPay = _addRequestPayService.Execute(cart.Data.SumAmount, UserId.Value);
-                // ارسال در گاه پرداخت
-
-                var result = await _payment.Request(new DtoRequest()
+                var request = new ZarinPalRequest
                 {
-                    Mobile = "09121112222",
+                    MerchantId = "6c729f63-9724-4349-9e69-786f9aee2658",
+                    Amount = cart.Data.SumAmount,
                     CallbackUrl = $"https://localhost:44328/Pay/Verify?guid={requestPay.Data.guid}",
                     Description = "پرداخت فاکتور شماره:" + requestPay.Data.RequestPayId,
                     Email = requestPay.Data.Email,
-                    Amount = requestPay.Data.Amount,
-                    MerchantId = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-                }, ZarinPal.Class.Payment.Mode.sandbox);
-                return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{result.Authority}");
+                    Mobile = "09121112222"
+                };
 
-
+                var result = await _zarinPalService.RequestPayment(request);
+                return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{result.data.authority}");
             }
-            else
+            catch (Exception ex)
             {
-                return RedirectToAction("Index", "Cart");
+                // مدیریت خطا
+                return RedirectToAction("PaymentError", "Home", new { message = ex.Message });
             }
-
         }
-
-        public async Task<IActionResult> Verify(Guid guid, string authority, string status)
+        else
         {
+            return RedirectToAction("Index", "Cart");
+        }
+    }
 
-            var requestPay = _getRequestPayService.Execute(guid);
+    public async Task<IActionResult> Verify(Guid guid, string authority, string status)
+    {
+        var requestPay = _getRequestPayService.Execute(guid);
 
-            var verification = await _payment.Verification(new DtoVerification
+        try
+        {
+            var verifyRequest = new ZarinPalVerifyRequest
             {
+                MerchantId = "6c729f63-9724-4349-9e69-786f9aee2658",
                 Amount = requestPay.Data.Amount,
-                MerchantId = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
                 Authority = authority
-            }, Payment.Mode.sandbox);
+            };
 
+            var result = await _zarinPalService.VerifyPayment(verifyRequest);
 
-            //var client = new RestClient("https://www.zarinpal.com/pg/rest/WebGate/PaymentVerification.json");
-            //client.Timeout = -1;
-            //var request = new RestRequest(Method.POST);
-            //request.AddHeader("Content-Type", "application/json");
-            //request.AddParameter("application/json", $"{{\"MerchantID\" :\"{merchendId}\",\"Authority\":\"{Authority}\",\"Amount\":\"{10000}\"}}", ParameterType.RequestBody);
-            //IRestResponse response = client.Execute(request);
-            //VerificationPayResultDto verification = JsonConvert.DeserializeObject<VerificationPayResultDto>(response.Content);
-            long? UserId = ClaimUtility.GetUserId(User);
-            var cart = _cartService.GetMyCart(_cookiesManeger.GetBrowserId(HttpContext), UserId);
-
-            if (verification.Status == 100)
+            if (result.data.code == 100)
             {
+                // پرداخت موفق
+                long? UserId = ClaimUtility.GetUserId(User);
+                var cart = _cartService.GetMyCart(_cookiesManeger.GetBrowserId(HttpContext), UserId);
+
                 _addNewOrderService.Execute(new RequestAddNewOrderSericeDto
                 {
                     CartId = cart.Data.CartId,
@@ -101,25 +95,18 @@ namespace EndPoint.Site.Controllers
                     RequestPayId = requestPay.Data.Id
                 });
 
-                //redirect to orders
                 return RedirectToAction("Index", "Orders");
             }
             else
             {
-
+                // پرداخت ناموفق
+                return RedirectToAction("PaymentFailed", "Home");
             }
-
-            return View();
+        }
+        catch (Exception ex)
+        {
+            // مدیریت خطا
+            return RedirectToAction("PaymentError", "Home", new { message = ex.Message });
         }
     }
-
-
-    public class VerificationPayResultDto
-    {
-        public int Status { get; set; }
-        public long RefID { get; set; }
-    }
-
-
 }
-

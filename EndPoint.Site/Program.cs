@@ -9,6 +9,7 @@ using Web_Store.Application.Services.Common.Queries.GetHomePageImages;
 using Web_Store.Application.Services.Common.Queries.GetMenuItem;
 using Web_Store.Application.Services.Common.Queries.GetSlider;
 using Web_Store.Application.Services.Fainances.Commands.AddRequestPay;
+using Web_Store.Application.Services.Fainances.Commands.ZarinPalService;
 using Web_Store.Application.Services.Fainances.Queries.GetRequestPayForAdmin;
 using Web_Store.Application.Services.Fainances.Queries.GetRequestPayService;
 using Web_Store.Application.Services.HomePages.AddHomePageImages;
@@ -73,7 +74,7 @@ builder.Services.AddScoped<IGetRequestPayForAdminService, GetRequestPayForAdminS
 builder.Services.AddScoped<IAddNewOrderService, AddNewOrderService>();
 builder.Services.AddScoped<IGetUserOrdersService, GetUserOrdersService>();
 builder.Services.AddScoped<IGetOrdersForAdminService, GetOrdersForAdminService>();
-
+builder.Services.AddHttpClient<ZarinPalService>();
 
 //FacadeInject
 builder.Services.AddScoped<IProductFacad, ProductFacad>();
