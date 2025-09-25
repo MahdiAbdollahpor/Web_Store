@@ -28,6 +28,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductDetailForAdm
         public ResultDto<ProductDetailForAdmindto> Execute(long Id)
         {
             var product = _context.Products
+                 .Where(p => !p.IsRemoved)
                 .Include(p => p.Category)
                 .ThenInclude(p => p.ParentCategory)
                 .Include(p => p.ProductFeatures)

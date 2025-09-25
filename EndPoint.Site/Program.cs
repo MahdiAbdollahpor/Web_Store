@@ -17,6 +17,7 @@ using Web_Store.Application.Services.HomePages.AddNewSlider;
 using Web_Store.Application.Services.Orders.Commands.AddNewOrder;
 using Web_Store.Application.Services.Orders.Queries.GetOrdersForAdmin;
 using Web_Store.Application.Services.Orders.Queries.GetUserOrders;
+using Web_Store.Application.Services.Products.Commands.EditProduct;
 using Web_Store.Application.Services.Products.FacadPattern;
 using Web_Store.Application.Services.Users.Commands.EditUser;
 using Web_Store.Application.Services.Users.Commands.RemoveUser;
@@ -75,6 +76,7 @@ builder.Services.AddScoped<IAddNewOrderService, AddNewOrderService>();
 builder.Services.AddScoped<IGetUserOrdersService, GetUserOrdersService>();
 builder.Services.AddScoped<IGetOrdersForAdminService, GetOrdersForAdminService>();
 builder.Services.AddHttpClient<ZarinPalService>();
+builder.Services.AddScoped<IEditProductService, EditProductService>();
 
 //FacadeInject
 builder.Services.AddScoped<IProductFacad, ProductFacad>();

@@ -22,6 +22,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductForSite
         {
             int totalRow = 0;
             var productQuery = _context.Products
+                 .Where(p => !p.IsRemoved)
                 .Include(p => p.ProductImages).AsQueryable();
 
             if (CatId != null)

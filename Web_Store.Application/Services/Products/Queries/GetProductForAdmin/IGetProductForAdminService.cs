@@ -27,6 +27,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductForAdmin
         {
             int rowCount = 0;
             var products = _context.Products
+                 .Where(p => !p.IsRemoved)
                 .Include(p => p.Category)
                 .ToPaged(Page, PageSize, out rowCount)
                 .Select(p => new ProductsFormAdminList_Dto
@@ -75,5 +76,6 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductForAdmin
         public int Price { get; set; }
         public int Inventory { get; set; }
         public bool Displayed { get; set; }
+        public DateTime? RemoveTime { get; set; }
     }
 }

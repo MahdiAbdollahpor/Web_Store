@@ -10,8 +10,14 @@ using Web_Store.Application.Interfaces.Contexts;
 using Web_Store.Application.Interfaces.FacadPatterns;
 using Web_Store.Application.Services.Products.Commands.AddNewCategory;
 using Web_Store.Application.Services.Products.Commands.AddNewProduct;
+using Web_Store.Application.Services.Products.Commands.DeleteProduct;
+using Web_Store.Application.Services.Products.Commands.EditProduct;
+using Web_Store.Application.Services.Products.Commands.PermanentDeleteMultipleProducts;
+using Web_Store.Application.Services.Products.Commands.PermanentDeleteProduct;
+using Web_Store.Application.Services.Products.Commands.RestoreProduct;
 using Web_Store.Application.Services.Products.Queries.GetAllCategories;
 using Web_Store.Application.Services.Products.Queries.GetCategories;
+using Web_Store.Application.Services.Products.Queries.GetDeletedProducts;
 using Web_Store.Application.Services.Products.Queries.GetProductDetailForAdmin;
 using Web_Store.Application.Services.Products.Queries.GetProductDetailForSite;
 using Web_Store.Application.Services.Products.Queries.GetProductForAdmin;
@@ -103,5 +109,61 @@ namespace Web_Store.Application.Services.Products.FacadPattern
             }
         }
 
+        private IEditProductService _editProductService;
+        public IEditProductService EditProductService
+        {
+            get
+            {
+                return _editProductService = _editProductService ?? new EditProductService(_context, _environment);
+            }
+        }
+
+
+        private IDeleteProductService _deleteProductService;
+        public IDeleteProductService DeleteProductService
+        {
+            get
+            {
+                return _deleteProductService = _deleteProductService ?? new DeleteProductService(_context);
+            }
+        }
+
+        private IRestoreProductService _restoreProductService;
+        public IRestoreProductService RestoreProductService
+        {
+            get
+            {
+                return _restoreProductService = _restoreProductService ?? new RestoreProductService(_context);
+            }
+        }
+
+        private IGetDeletedProductsService _getDeletedProductsService;
+        public IGetDeletedProductsService GetDeletedProductsService
+        {
+            get
+            {
+                return _getDeletedProductsService = _getDeletedProductsService ?? new GetDeletedProductsService(_context);
+            }
+        }
+
+        private IPermanentDeleteProductService _permanentDeleteProductService;
+        public IPermanentDeleteProductService PermanentDeleteProductService
+        {
+            get
+            {
+                return _permanentDeleteProductService = _permanentDeleteProductService ?? new PermanentDeleteProductService(_context, _environment);
+            }
+        }
+
+        private IPermanentDeleteMultipleProductsService _permanentDeleteMultipleProductsService;
+        public IPermanentDeleteMultipleProductsService PermanentDeleteMultipleProductsService
+        {
+            get
+            {
+                return _permanentDeleteMultipleProductsService = _permanentDeleteMultipleProductsService ?? new PermanentDeleteMultipleProductsService(_context, _environment);
+            }
+        }
     }
+
 }
+

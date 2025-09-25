@@ -24,6 +24,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductDetailForSit
         public ResultDto<ProductDetailForSiteDto> Execute(long Id)
         {
             var Product = _context.Products
+                .Where(p => p.Id == Id && !p.IsRemoved && p.Displayed)
                 .Include(p => p.Category)
                 .ThenInclude(p => p.ParentCategory)
                 .Include(p => p.ProductImages)

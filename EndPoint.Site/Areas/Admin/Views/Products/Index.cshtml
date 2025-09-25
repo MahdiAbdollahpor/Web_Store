@@ -1,80 +1,427 @@
 ﻿@using Web_Store.Application.Services.Products.Queries.GetProductForAdmin
-@addTagHelper *, LazZiya.TagHelpers
-@model ProductForAdminDto;
+
+@model ProductForAdminDto
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "مدیریت محصولات";
     Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
 }
 
-<div class="content-wrapper">
-    <div class="container-fluid">
-        <!-- Zero configuration table -->
-        <section id="configuration">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-
-                        <div class="card-body collapse show">
-                            <div class="card-block card-dashboard">
-                                <p class="card-text">لیست محصولات</p>
-                                <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
-                                    <div class="col-sm-12">
-                                        <table class="table table-striped table-bordered zero-configuration dataTable" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
-                                            <thead>
-                                                <tr role="row">
-                                                    <th class="sorting_asc">نام</th>
-                                                    <th class="sorting_asc">دسته بندی</th>
-                                                    <th class="sorting_asc">برند </th>
-                                                    <th class="sorting_asc">قیمت </th>
-                                                    <th class="sorting_asc">موجودی </th>
-                                                    <th class="sorting_asc">نمایش در سایت؟ </th>
-                                                    <th class="sorting_asc"> </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                                @foreach (var item in Model.Products)
-                                                {
-                                                    <tr role="row">
-                                                        <td>@item.Name</td>
-                                                        <td>@item.Category</td>
-                                                        <td>@item.Brand</td>
-                                                        <td>@item.Price.ToString("n0")</td>
-                                                        <td>@item.Inventory</td>
-                                                        <td>@item.Displayed</td>
-                                                        <td>
-                                                            <a class="btn btn-danger">حذف</a>
-                                                            <a href="~/admin/products/detail/@item.Id" class="btn btn-info">اطلاعات بیشتر</a>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <div class="  text-center">
-                                    <paging total-records="Model.RowCount"
-                                            page-no="Model.CurrentPage"
-                                            page-size="Model.PageSize"
-                                            show-prev-next="true"
-                                            show-total-pages="false"
-                                            show-total-records="false"
-                                            show-page-size-nav="true"
-                                            show-first-numbered-page="true"
-                                            show-last-numbered-page="true"
-                                            query-string-key-page-no="Page"
-                                            query-string-key-page-size="PageSize"
-                                            gap-size="2">
-                                    </paging>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">لیست محصولات</h3>
+        <div class="card-tools">
+            <a href="~/admin/products/deletedproducts" class="btn btn-warning mr-2">
+                <i class="fa fa-trash"></i> محصولات حذف شده
+            </a>
+            <a href="~/admin/products/AddNewProduct" class="btn btn-primary">
+                <i class="fa fa-plus"></i> افزودن محصول جدید
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- نمایش پیام موفقیت -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </section>
+        }
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th width="50">
+                            <input type="checkbox" id="selectAll" />
+                        </th>
+                        <th>نام محصول</th>
+                        <th>دسته‌بندی</th>
+                        <th>قیمت</th>
+                        <th>موجودی</th>
+                        <th>وضعیت</th>
+                        <th width="200">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model.Products)
+                    {
+                        <tr data-product-id="@product.Id">
+                            <td>
+                                <input type="checkbox" class="product-checkbox" value="@product.Id" />
+                            </td>
+                            <td>@product.Name</td>
+                            <td>@product.Category</td>
+                            <td>@product.Price.ToString("n0") تومان</td>
+                            <td>@product.Inventory</td>
+                            <td>
+                                @if (product.Displayed)
+                                {
+                                    <span class="badge badge-success">فعال</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">غیرفعال</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="~/admin/products/detail/@product.Id"
+                                   class="btn btn-sm btn-info" title="جزئیات">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                <a href ="~/admin/products/EditProduct/@product.Id"
+                                   class="btn btn-sm btn-warning" title="ویرایش">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <button class="btn btn-sm btn-danger delete-single" 
+                                        data-id="@product.Id" 
+                                        data-name="@product.Name"
+                                        title="حذف">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                                
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- دکمه حذف گروهی -->
+        <div class="mt-3">
+            <button id="deleteSelected" class="btn btn-danger" disabled>
+                <i class="fa fa-trash"></i> حذف محصولات انتخاب شده
+            </button>
+        </div>
+
+        <!-- صفحه‌بندی -->
+        @if (Model.RowCount > Model.PageSize)
+        {
+            <nav aria-label="Page navigation" class="mt-3">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= (Model.RowCount + Model.PageSize - 1) / Model.PageSize; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { Page = i, PageSize = Model.PageSize })">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // تابع بازیابی محصول
+            function restoreProduct(productId, productName) {
+                Swal.fire({
+                    title: 'آیا مطمئن هستید؟',
+                    html: `آیا از بازیابی محصول "<strong>${productName}</strong>" اطمینان دارید؟`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'بله، بازیابی شود',
+                    cancelButtonText: 'انصراف',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'لطفا منتظر بمانید...',
+                            text: 'در حال بازیابی محصول',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        $.ajax({
+                            url: '/admin/products/RestoreProduct',
+                            type: 'POST',
+                            data: { id: productId },
+                            success: function (result) {
+                                Swal.close();
+
+                                if (result.isSuccess) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'موفق',
+                                        text: result.message,
+                                        confirmButtonText: 'باشه',
+                                        timer: 2000,
+                                        timerProgressBar: true
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        text: result.message,
+                                        confirmButtonText: 'متوجه شدم'
+                                    });
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.close();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطا',
+                                    text: 'خطا در ارتباط با سرور',
+                                    confirmButtonText: 'متوجه شدم'
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            // انتخاب همه/عدم انتخاب همه
+            $('#selectAll').change(function () {
+                $('.product-checkbox').prop('checked', this.checked);
+                toggleDeleteButton();
+            });
+
+            // تغییر وضعیت دکمه حذف گروهی
+            $('.product-checkbox').change(function () {
+                toggleDeleteButton();
+                $('#selectAll').prop('checked', 
+                    $('.product-checkbox:checked').length === $('.product-checkbox').length);
+            });
+
+            function toggleDeleteButton() {
+                const checkedCount = $('.product-checkbox:checked').length;
+                $('#deleteSelected').prop('disabled', checkedCount === 0);
+                if (checkedCount > 0) {
+                    $('#deleteSelected').html(`<i class="fa fa-trash"></i> حذف ${checkedCount} محصول انتخاب شده`);
+                } else {
+                    $('#deleteSelected').html('<i class="fa fa-trash"></i> حذف محصولات انتخاب شده');
+                }
+            }
+
+            // حذف تک محصول
+            $('.delete-single').click(function () {
+                const productId = $(this).data('id');
+                const productName = $(this).data('name');
+                
+                Swal.fire({
+                    title: 'آیا مطمئن هستید؟',
+                    html: `آیا از حذف محصول "<strong>${productName}</strong>" اطمینان دارید؟<br><small>این عمل قابل بازگشت نیست.</small>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'بله، حذف شود',
+                    cancelButtonText: 'انصراف',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deleteProduct(productId, false);
+                    }
+                });
+            });
+
+            // حذف گروهی
+            $('#deleteSelected').click(function () {
+                const selectedIds = [];
+                $('.product-checkbox:checked').each(function () {
+                    selectedIds.push($(this).val());
+                });
+
+                if (selectedIds.length > 0) {
+                    Swal.fire({
+                        title: 'آیا مطمئن هستید؟',
+                        html: `آیا از حذف <strong>${selectedIds.length} محصول</strong> انتخاب شده اطمینان دارید؟<br><small>این عمل قابل بازگشت نیست.</small>`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: `بله، حذف ${selectedIds.length} محصول`,
+                        cancelButtonText: 'انصراف',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            deleteProducts(selectedIds);
+                        }
+                    });
+                }
+            });
+
+            // تابع حذف تک محصول
+            function deleteProduct(productId, isMultiple = false) {
+                Swal.fire({
+                    title: 'لطفا منتظر بمانید...',
+                    text: 'در حال حذف محصول',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: '/admin/products/deleteproduct',
+                    type: 'POST',
+                    data: { id: productId },
+                    success: function (result) {
+                        Swal.close();
+                        
+                        if (result.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفق',
+                                text: result.message,
+                                confirmButtonText: 'باشه',
+                                timer: 2000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                // رفرش صفحه
+                                window.location.href = '/admin/products/index';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: result.message,
+                                confirmButtonText: 'متوجه شدم'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطا در ارتباط با سرور: ' + error,
+                            confirmButtonText: 'متوجه شدم'
+                        });
+                    }
+                });
+            }
+
+            // تابع حذف گروهی محصولات
+            function deleteProducts(productIds) {
+                Swal.fire({
+                    title: 'لطفا منتظر بمانید...',
+                    html: `در حال حذف ${productIds.length} محصول`,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: '/admin/products/deletemultipleproducts',
+                    type: 'POST',
+                    data: { productIds: productIds },
+                    traditional: true,
+                    success: function (result) {
+                        Swal.close();
+                        
+                        if (result.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفق',
+                                html: result.message,
+                                confirmButtonText: 'باشه',
+                                timer: 2500,
+                                timerProgressBar: true
+                            }).then(() => {
+                                // رفرش صفحه
+                                window.location.href = '/admin/products/index';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: result.message,
+                                confirmButtonText: 'متوجه شدم'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطا در ارتباط با سرور: ' + error,
+                            confirmButtonText: 'متوجه شدم'
+                        });
+                    }
+                });
+            }
+
+            // نمایش تأیید حذف برای لینک‌ها (جلوگیری از ارسال فرم با Enter)
+            $(document).on('keypress', function (e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // hover effect برای دکمه‌ها
+            $('.delete-single').hover(
+                function() {
+                    $(this).addClass('shadow');
+                },
+                function() {
+                    $(this).removeClass('shadow');
+                }
+            );
+        });
+    </script>
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .product-checkbox {
+            cursor: pointer;
+        }
+        
+        #selectAll {
+            cursor: pointer;
+        }
+        
+        .btn-danger {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+        }
+        
+        .shadow {
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3) !important;
+        }
+
+        /* استایل‌های SweetAlert سفارشی */
+        .swal2-popup {
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .swal2-title {
+            font-size: 1.5rem;
+        }
+        
+        .swal2-html-container {
+            font-size: 1.1rem;
+        }
+    </style>
+}
+
+
+
 
