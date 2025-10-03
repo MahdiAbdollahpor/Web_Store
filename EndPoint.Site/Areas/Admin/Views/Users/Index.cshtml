@@ -4,14 +4,12 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
+    var currentSearchKey = Context.Request.Query["searchkey"];
 }
-
 
 <div class="content-wrapper">
     <div class="container-fluid">
-        <!-- Zero configuration table -->
         <section id="configuration">
-
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -25,53 +23,109 @@
                                 <p class="card-text">لیست کاربران فروشگاه باگتو</p>
 
                                 <form method="get" class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                    <fieldset class="form-group">
-                                        <input type="text" class="form-control" name="serchkey">
-                                        <button class="btn btn-success">جستجو</button>
+                                    <fieldset class="form-group input-group">
+                                        <input type="text" class="form-control" name="searchkey" value="@currentSearchKey" placeholder="جستجو...">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-success">جستجو</button>
+                                        </div>
                                     </fieldset>
                                 </form>
 
-                                <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
-                                    <div class="col-sm-12">
-                                        <table class="table table-striped table-bordered zero-configuration dataTable" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
-                                            <thead>
-                                                <tr role="row">
-                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="نام: activate to sort column descending" style="width: 222px;">نام</th>
-                                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="ایمیل: activate to sort column ascending" style="width: 401px;">ایمیل</th>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>نام</th>
+                                                <th>ایمیل</th>
+                                                <th>عملیات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Users)
+                                            {
+                                                <tr>
+                                                    <td>@item.FullName</td>
+                                                    <td>@item.Email</td>
+                                                    <td>
+                                                        <button class="btn btn-info btn-sm" onclick="ShowModalEdituser('@item.Id', '@item.FullName')">ویرایش</button>
+                                                        <button class="btn btn-danger btn-sm" onclick="DeleteUser('@item.Id')">حذف</button>
+                                                        @if (item.IsActive)
+                                                        {
+                                                            <button class="btn btn-warning btn-sm" onclick="UserSatusChange('@item.Id')">غیر فعال</button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn-info btn-sm" onclick="UserSatusChange('@item.Id')">فعال کردن کاربر</button>
+                                                        }
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                                                @foreach (var item in Model.Users)
+                                <!-- صفحه‌بندی -->
+                                @if (Model.TotalPages > 1)
+                                {
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination justify-content-center">
+                                            <!-- دکمه قبلی -->
+                                            @if (Model.CurrentPage > 1)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" href="@Url.Content($"~/admin/users?page={Model.CurrentPage - 1}&searchkey={currentSearchKey}")">قبلی</a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">قبلی</span>
+                                                </li>
+                                            }
+
+                                            <!-- صفحات -->
+                                            @for (int i = 1; i <= Model.TotalPages; i++)
+                                            {
+                                                if (i == Model.CurrentPage)
                                                 {
-                                                    <tr role="row" class="odd">
-                                                        <td class="sorting_1">@item.FullName</td>
-                                                        <td>@item.Email</td>
-                                                        <td>
-                                                            <button class="btn btn-info" onclick="ShowModalEdituser('@item.Id' , '@item.FullName')">ویرایش</button>
-                                                            <button class="btn btn-danger" onclick="DeleteUser('@item.Id')">حذف</button>
-                                                            @if (item.IsActive)
-                                                            {
-                                                                <button class="btn btn-warning" onclick="UserSatusChange('@item.Id')">غیر فعال</button>
-
-                                                            }
-                                                            else
-                                                            {
-                                                                <button class="btn btn-info" onclick="UserSatusChange('@item.Id')">فعال کردن کاربر  </button>
-                                                            }
-                                                        </td>
-                                                    </tr>
+                                                    <li class="page-item active">
+                                                        <span class="page-link">@i</span>
+                                                    </li>
                                                 }
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div><div class="row"><div class="col-sm-12 col-md-5"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">نمایش 1 تا 10 از 57 سطرها</div></div><div class="col-sm-12 col-md-7"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="0" tabindex="0" class="page-link">قبلی</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="1" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="2" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="3" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="4" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="5" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="6" tabindex="0" class="page-link">6</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="7" tabindex="0" class="page-link">بعدی</a></li></ul></div></div></div>
+                                                else
+                                                {
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="@Url.Content($"~/admin/users?page={i}&searchkey={currentSearchKey}")">@i</a>
+                                                    </li>
+                                                }
+                                            }
+
+                                            <!-- دکمه بعدی -->
+                                            @if (Model.CurrentPage < Model.TotalPages)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" href="@Url.Content($"~/admin/users?page={Model.CurrentPage + 1}&searchkey={currentSearchKey}")">بعدی</a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">بعدی</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </nav>
+                                }
+
+                                <!-- اطلاعات صفحه -->
+                                <div class="text-center text-muted">
+                                    نمایش @((Model.CurrentPage - 1) * Model.PageSize + 1) تا @((Model.CurrentPage - 1) * Model.PageSize + Model.Users.Count) از @Model.Rows مورد
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </section>
     </div>
 </div>

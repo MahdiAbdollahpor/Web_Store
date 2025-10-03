@@ -36,12 +36,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
 
-        public IActionResult Index(string serchkey, int page = 1)
+        public IActionResult Index(string searchkey, int page = 1)
         {
+            var pageSize = 10; // یا می‌توانید از تنظیمات بگیرید
             return View(_getUsersService.Execute(new RequestGetUserDto
             {
                 Page = page,
-                SearchKey = serchkey,
+                PageSize = pageSize,
+                SearchKey = searchkey,
             }));
         }
 

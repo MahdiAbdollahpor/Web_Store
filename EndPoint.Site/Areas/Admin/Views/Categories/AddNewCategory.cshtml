@@ -1,59 +1,74 @@
 ﻿@{
-    ViewData["Title"] = "AddNewCategory";
+    ViewData["Title"] = "افزودن دسته‌بندی جدید";
     Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
 }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<section class="basic-elements">
+<div class="p-4 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">افزودن دسته‌بندی جدید</h1>
+        <p class="text-gray-600 mt-2">اطلاعات دسته‌بندی جدید را وارد کنید</p>
+    </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title-wrap bar-success">
-                        <h4 class="card-title mb-0">اضافه کردن دسته بندی جدید برای محصولات</h4>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="px-3">
-                        <div class="form">
-                            <div class="form-body">
-                                <div class="row">
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-                                            <input type="hidden" id="parentId" value="@ViewBag.parentId" />
-                                            <label for="basicInput">نام دسته بندی</label>
-                                            <input type="text" class="form-control" id="Name">
-                                        </fieldset>
-                                    </div>
+    <!-- Form -->
+    <form id="addCategoryForm">
+        <input type="hidden" id="parentId" value="@ViewBag.parentId" />
 
-                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-                                            <br />
-                                            <a onclick="AddNewCategory()" class="btn btn-success col-md-12">اضافه کردن به لیست</a>
-                                        </fieldset>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="mb-6">
+            <label for="Name" class="block text-sm font-medium text-gray-700 mb-2">
+                نام دسته‌بندی
+            </label>
+            <input type="text"
+                   id="Name"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                   placeholder="نام دسته‌بندی را وارد کنید">
+            <p class="mt-1 text-sm text-gray-500">نام مناسبی برای دسته‌بندی انتخاب کنید</p>
+        </div>
+
+        @if (ViewBag.parentId != null)
+        {
+            <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-info-circle text-blue-500 ml-2"></i>
+                    <span class="text-sm text-blue-700">
+                        این دسته‌بندی به عنوان زیرمجموعه اضافه خواهد شد
+                    </span>
                 </div>
             </div>
+        }
+
+        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+            <a href="~/admin/categories"
+               class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
+                <i class="fas fa-arrow-right ml-2"></i>
+                بازگشت به لیست
+            </a>
+
+            <button type="button"
+                    onclick="addNewCategory()"
+                    class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
+                <i class="fas fa-plus ml-2"></i>
+                افزودن دسته‌بندی
+            </button>
         </div>
-    </div>
-</section>
-
-
-
+    </form>
+</div>
 
 @section Scripts
 {
-
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
-
     <script>
-        function AddNewCategory() {
+        function addNewCategory() {
+            var name = $("#Name").val();
+            var parentId = $("#parentId").val();
+
+            if (!name.trim()) {
+                Swal.fire('خطا!', 'لطفا نام دسته‌بندی را وارد کنید', 'error');
+                return;
+            }
             swal.fire({
                 title: 'دسته بندی جدید',
                 text: "آیا میخواهید دسته بندی جدید به لیست دسته بندی ها اضافه شود؟",
@@ -88,7 +103,11 @@
                                     data.message,
                                     'success'
                                 ).then(function (isConfirm) {
-                                    location.reload();
+                                    if (parentId) {
+                                        window.location.href = '/Admin/Categories/Index?ParentId=' + parentId;
+                                    } else {
+                                        window.location.href = '/Admin/Categories';
+                                    }
                                 });
 
 
@@ -115,8 +134,12 @@
 
                 }
             })
+
         }
+
+       
     </script>
 }
 
-
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

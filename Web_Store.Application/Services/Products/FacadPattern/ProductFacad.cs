@@ -10,7 +10,9 @@ using Web_Store.Application.Interfaces.Contexts;
 using Web_Store.Application.Interfaces.FacadPatterns;
 using Web_Store.Application.Services.Products.Commands.AddNewCategory;
 using Web_Store.Application.Services.Products.Commands.AddNewProduct;
+using Web_Store.Application.Services.Products.Commands.DeleteCategory;
 using Web_Store.Application.Services.Products.Commands.DeleteProduct;
+using Web_Store.Application.Services.Products.Commands.EditCategory;
 using Web_Store.Application.Services.Products.Commands.EditProduct;
 using Web_Store.Application.Services.Products.Commands.PermanentDeleteMultipleProducts;
 using Web_Store.Application.Services.Products.Commands.PermanentDeleteProduct;
@@ -163,7 +165,25 @@ namespace Web_Store.Application.Services.Products.FacadPattern
                 return _permanentDeleteMultipleProductsService = _permanentDeleteMultipleProductsService ?? new PermanentDeleteMultipleProductsService(_context, _environment);
             }
         }
-    }
 
+        private IEditCategoryService _editCategoryService;
+        public IEditCategoryService EditCategoryService
+        {
+            get
+            {
+                return _editCategoryService = _editCategoryService ?? new EditCategoryService(_context);
+            }
+        }
+
+        private IDeleteCategoryService _deleteCategoryService;
+        public IDeleteCategoryService DeleteCategoryService
+        {
+            get
+            {
+                return _deleteCategoryService = _deleteCategoryService ?? new DeleteCategoryService(_context);
+            }
+        }
+
+    }
 }
 

@@ -20,23 +20,29 @@ namespace Web_Store.Application.Services.Users.Queries.GetUsers
         public ReslutGetUserDto Execute(RequestGetUserDto request)
         {
             var users = _context.Users.AsQueryable();
+
             if (!string.IsNullOrWhiteSpace(request.SearchKey))
             {
                 users = users.Where(p => p.FullName.Contains(request.SearchKey) || p.Email.Contains(request.SearchKey));
             }
-            int rowsCount = 0;
-            var usersList = users.ToPaged(request.Page, 20, out rowsCount).Select(p => new GetUsersDto
-            {
-                Email = p.Email,
-                FullName = p.FullName,
-                Id = p.Id,
-                IsActive = p.IsActive
-            }).ToList();
+
+            int rowsCount = users.Count();
+            var usersList = users.Skip((request.Page - 1) * request.PageSize)
+                                .Take(request.PageSize)
+                                .Select(p => new GetUsersDto
+                                {
+                                    Email = p.Email,
+                                    FullName = p.FullName,
+                                    Id = p.Id,
+                                    IsActive = p.IsActive
+                                }).ToList();
 
             return new ReslutGetUserDto
             {
                 Rows = rowsCount,
                 Users = usersList,
+                CurrentPage = request.Page,
+                PageSize = request.PageSize
             };
         }
     }
