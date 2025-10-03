@@ -1,0 +1,67 @@
+﻿@using Web_Store.Application.Services.Sliders
+@model SliderDto
+@{
+    ViewData["Title"] = "ویرایش اسلایدر";
+    Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
+}
+
+<section class="basic-elements">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap bar-warning">
+                        <h4 class="card-title mb-0">ویرایش اسلایدر</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="px-3">
+                        <div class="form">
+                            <div class="form-body">
+                                <form asp-action="Edit" method="post" class="row" enctype="multipart/form-data">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+
+                                    <div class="col-xl-6 col-lg-6 col-md-12 mb-1">
+                                        <div class="form-group">
+                                            <label>تصویر فعلی</label>
+                                            <div>
+                                                <img src="~/@Model.Src" alt="اسلایدر فعلی" style="max-width: 300px; max-height: 150px;" class="img-thumbnail" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-6 col-lg-6 col-md-12 mb-1">
+                                        <div class="form-group">
+                                            <label>تصویر جدید (در صورت عدم انتخاب، تصویر فعلی حفظ می‌شود)</label>
+                                            <input type="file" name="file" class="form-control" />
+                                            <small class="form-text text-muted">فرمت‌های مجاز: jpg, png, gif, webp</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
+                                        <div class="form-group">
+                                            <label>آدرس لینک</label>
+                                            <input type="text" class="form-control" name="link" value="@Model.Link" placeholder="https://example.com">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
+                                        <div class="form-group">
+                                            <br />
+                                            <button type="submit" class="btn btn-warning col-md-12">
+                                                <i class="ft-save"></i> ذخیره تغییرات
+                                            </button>
+                                            <a href="~/admin/Sliders/" class="btn btn-secondary col-md-12 mt-1">
+                                                <i class="ft-x"></i> انصراف
+                                            </a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

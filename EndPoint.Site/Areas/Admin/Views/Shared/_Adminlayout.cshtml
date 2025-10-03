@@ -84,6 +84,18 @@
                             </ul>
                         </li>
 
+                        <li class="has-sub nav-item">
+                            <a href="#"><i class="icon-picture"></i><span data-i18n="" class="menu-title">مدیریت اسلایدرها</span></a>
+                            <ul class="menu-content">
+                                <li>
+                                    <a href="~/admin/sliders/" class="menu-item">لیست اسلایدرها</a>
+                                </li>
+                                <li>
+                                    <a href="~/admin/sliders/add" class="menu-item">افزودن اسلایدر جدید</a>
+                                </li>
+                            </ul>
+                        </li>
+
                         @if (ClaimUtility.GetRolse(User).Where(p => p == "Operator").Count() >= 1)
                         {
                             <li class="has-sub nav-item">
