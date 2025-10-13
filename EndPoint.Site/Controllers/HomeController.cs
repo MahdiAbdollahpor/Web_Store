@@ -1,4 +1,4 @@
-using EndPoint.Site.Models;
+﻿using EndPoint.Site.Models;
 using EndPoint.Site.Models.ViewModels.HomePages;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -29,14 +29,31 @@ namespace EndPoint.Site.Controllers
 
         public IActionResult Index()
         {
-            HomePageViewModel homePage = new HomePageViewModel()
+            try
             {
-                Sliders = _getSliderService.Execute().Data,
-                PageImages = _homePageImagesService.Execute().Data,
-                Camera = _productFacad.GetProductForSiteService.Execute(Ordering.theNewest
-               , null, 1, 6, 25).Data.Products,
-            };
-            return View(homePage);
+                var homePage = new HomePageViewModel()
+                {
+                    Sliders = _getSliderService.Execute().Data ?? new List<SliderDto>(),
+                    PageImages = _homePageImagesService.Execute().Data ?? new List<HomePageImagesDto>(),
+                    LatestProducts = _productFacad.GetProductForSiteService.Execute(
+                        Ordering.theNewest, null, 1, 5, null).Data?.Products ?? new List<ProductForSiteDto>(),
+                    MostVisitedProducts = _productFacad.GetProductForSiteService.Execute(
+                        Ordering.MostVisited, null, 1, 5, null).Data?.Products ?? new List<ProductForSiteDto>(),
+                    Category1Products = _productFacad.GetProductForSiteService.Execute(
+                        Ordering.theNewest, null, 1, 5, 1).Data?.Products ?? new List<ProductForSiteDto>(),
+                    Category2Products = _productFacad.GetProductForSiteService.Execute(
+                        Ordering.theNewest, null, 1, 5, 2).Data?.Products ?? new List<ProductForSiteDto>(),
+                    Category3Products = _productFacad.GetProductForSiteService.Execute(
+                        Ordering.theNewest, null, 1, 5, 6).Data?.Products ?? new List<ProductForSiteDto>(),
+                };
+                return View(homePage);
+            }
+            catch (Exception ex)
+            {
+                // مدیریت خطا - می‌توانید یک صفحه خطا نمایش دهید یا به صفحه اصلی بازگردید
+                _logger.LogError(ex, "Error in HomeController Index");
+                return View(new HomePageViewModel()); // نمایش صفحه با داده‌های خالی
+            }
         }
 
         public IActionResult Privacy()

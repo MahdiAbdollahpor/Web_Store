@@ -8,8 +8,16 @@ namespace EndPoint.Site.Models.ViewModels.HomePages
     {
         public List<SliderDto> Sliders { get; set; }
         public List<HomePageImagesDto> PageImages { get; set; }
-        public List<ProductForSiteDto> Camera { get; set; }
-        public List<ProductForSiteDto> Mobile { get; set; }
-        public List<ProductForSiteDto> Laptop { get; set; }
+
+        // محصولات جدید
+        public List<ProductForSiteDto> LatestProducts { get; set; }
+
+        // محصولات پربازدید
+        public List<ProductForSiteDto> MostVisitedProducts { get; set; }
+
+        // محصولات از 3 دسته‌بندی انتخابی
+        public List<ProductForSiteDto> Category1Products { get; set; }
+        public List<ProductForSiteDto> Category2Products { get; set; }
+        public List<ProductForSiteDto> Category3Products { get; set; }
     }
 }

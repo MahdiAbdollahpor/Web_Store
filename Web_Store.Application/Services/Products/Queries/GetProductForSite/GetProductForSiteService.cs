@@ -20,64 +20,83 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductForSite
         }
         public ResultDto<ResultProductForSiteDto> Execute(Ordering ordering, string SearchKey, int Page, int pageSize, long? CatId)
         {
-            int totalRow = 0;
-            var productQuery = _context.Products
-                 .Where(p => !p.IsRemoved)
-                .Include(p => p.ProductImages).AsQueryable();
-
-            if (CatId != null)
+            try
             {
-                productQuery = productQuery.Where(p => p.CategoryId == CatId || p.Category.ParentCategoryId == CatId).AsQueryable();
-            }
-            if (!string.IsNullOrWhiteSpace(SearchKey))
-            {
-                productQuery = productQuery.Where(p => p.Name.Contains(SearchKey) || p.Brand.Contains(SearchKey)).AsQueryable();
-            }
+                int totalRow = 0;
+                var productQuery = _context.Products
+                    .Where(p => !p.IsRemoved)
+                    .Include(p => p.ProductImages)
+                    .AsQueryable();
 
-            switch (ordering)
-            {
-                case Ordering.NotOrder:
-                    productQuery = productQuery.OrderByDescending(p => p.Id).AsQueryable();
-                    break;
-                case Ordering.MostVisited:
-                    productQuery = productQuery.OrderByDescending(p => p.ViewCount).AsQueryable();
-                    break;
-                case Ordering.Bestselling:
-                    break;
-                case Ordering.MostPopular:
-                    break;
-                case Ordering.theNewest:
-                    productQuery = productQuery.OrderByDescending(p => p.Id).AsQueryable();
-                    break;
-                case Ordering.Cheapest:
-                    productQuery = productQuery.OrderBy(p => p.Price).AsQueryable();
-                    break;
-                case Ordering.theMostExpensive:
-                    productQuery = productQuery.OrderByDescending(p => p.Price).AsQueryable();
-                    break;
-                default:
-                    break;
-            }
-
-            var product = productQuery.ToPaged(Page, pageSize, out totalRow);
-
-            Random rd = new Random();
-            return new ResultDto<ResultProductForSiteDto>
-            {
-                Data = new ResultProductForSiteDto
+                if (CatId != null)
                 {
-                    TotalRow = totalRow,
-                    Products = product.Select(p => new ProductForSiteDto
+                    productQuery = productQuery.Where(p =>
+                        p.CategoryId == CatId ||
+                        (p.Category != null && p.Category.ParentCategoryId == CatId)
+                    ).AsQueryable();
+                }
+
+                if (!string.IsNullOrWhiteSpace(SearchKey))
+                {
+                    productQuery = productQuery.Where(p =>
+                        p.Name.Contains(SearchKey) ||
+                        p.Brand.Contains(SearchKey)
+                    ).AsQueryable();
+                }
+
+                // مرتب‌سازی
+                switch (ordering)
+                {
+                    case Ordering.NotOrder:
+                        productQuery = productQuery.OrderByDescending(p => p.Id);
+                        break;
+                    case Ordering.MostVisited:
+                        productQuery = productQuery.OrderByDescending(p => p.ViewCount);
+                        break;
+                    case Ordering.theNewest:
+                        productQuery = productQuery.OrderByDescending(p => p.Id);
+                        break;
+                    case Ordering.Cheapest:
+                        productQuery = productQuery.OrderBy(p => p.Price);
+                        break;
+                    case Ordering.theMostExpensive:
+                        productQuery = productQuery.OrderByDescending(p => p.Price);
+                        break;
+                    default:
+                        productQuery = productQuery.OrderByDescending(p => p.Id);
+                        break;
+                }
+
+                var products = productQuery.ToPaged(Page, pageSize, out totalRow);
+
+                Random rd = new Random();
+                return new ResultDto<ResultProductForSiteDto>
+                {
+                    Data = new ResultProductForSiteDto
                     {
-                        Id = p.Id,
-                        Star = rd.Next(1, 5),
-                        Title = p.Name,
-                        ImageSrc = p.ProductImages.FirstOrDefault().Src,
-                        Price = p.Price
-                    }).ToList(),
-                },
-                IsSuccess = true,
-            };
+                        TotalRow = totalRow,
+                        Products = products.Select(p => new ProductForSiteDto
+                        {
+                            Id = p.Id,
+                            Star = rd.Next(1, 5),
+                            Title = p.Name,
+                            // اصلاح این خطا - بررسی null برای ProductImages
+                            ImageSrc = p.ProductImages?.FirstOrDefault()?.Src ?? "/images/default-product.png",
+                            Price = p.Price
+                        }).ToList(),
+                    },
+                    IsSuccess = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                // لاگ کردن خطا
+                return new ResultDto<ResultProductForSiteDto>
+                {
+                    IsSuccess = false,
+                    Message = "خطا در دریافت اطلاعات محصولات"
+                };
+            }
         }
     }
 }
