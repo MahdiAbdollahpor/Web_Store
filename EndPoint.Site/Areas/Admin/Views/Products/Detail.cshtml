@@ -5,60 +5,97 @@
     Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
 }
 
-<div class="col-sm-12">
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title-wrap bar-warning">
-                <div class="card-title">اطلاعات بیشتر در مورد محصول</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="card-title-wrap bar-warning">
+                    <div class="card-title">اطلاعات محصول</div>
+                </div>
             </div>
-        </div>
-        <div class="card-body">
-            <div class="card-block">
+            <div class="card-body">
                 <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                        <ul class="no-list-style">
-                            <li class="mb-2">
-                                <span class="primary text-bold-500"><a><i class="ft-home font-small-3"></i>  محصول</a></span>
-                                <span class="line-height-2 display-block overflow-hidden">@Model.Name</span>
-                            </li>
-                            <li class="mb-2">
-                                <span class="primary text-bold-500"><a><i class="ft-briefcase font-small-3"></i> برند</a></span>
-                                <span class="line-height-2 display-block overflow-hidden"> @Model.Brand</span>
-                            </li>
-                        </ul>
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <div class="info-item border rounded p-3 h-100">
+                            <h6 class="text-primary mb-2">
+                                <i class="ft-package font-small-3 ml-2"></i>
+                                نام محصول
+                            </h6>
+                            <p class="mb-0 text-dark">@Model.Name</p>
+                        </div>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                        <ul class="no-list-style">
-                            <li class="mb-2">
-                                <span class="primary text-bold-500"><a><i class="ft-home font-small-3"></i> دسته بندی</a></span>
-                                <span class="line-height-2 display-block overflow-hidden">@Model.Category</span>
-                            </li>
-                            <li class="mb-2">
-                                <span class="primary text-bold-500"><a><i class="ft-home font-small-3"></i>قیمت</a></span>
-                                <span class="line-height-2 display-block overflow-hidden"> @Model.Price.ToString("n0")</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                        <ul class="no-list-style">
-                            <li class="mb-2">
-                                <span class="primary text-bold-500"><a><i class="ft-home font-small-3"></i>موجودی</a></span>
-                                <span class="line-height-2 display-block overflow-hidden">@Model.Inventory</span>
-                            </li>
-                            <li class="mb-2">
-                                <span class="primary text-bold-500"><a><i class="ft-home font-small-3"></i>نمایش در سایت؟</a></span>
-                                <span class="line-height-2 display-block overflow-hidden"> @Model.Displayed</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                        <ul class="no-list-style">
-                            <li class="">
-                                <span class="primary text-bold-500"><a><i class="ft-home font-small-3"></i>توضیحات</a></span>
-                                <span class="line-height-2 display-block overflow-hidden">@Model.Description</span>
-                            </li>
 
-                        </ul>
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <div class="info-item border rounded p-3 h-100">
+                            <h6 class="text-primary mb-2">
+                                <i class="ft-award font-small-3 ml-2"></i>
+                                برند
+                            </h6>
+                            <p class="mb-0 text-dark">@Model.Brand</p>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <div class="info-item border rounded p-3 h-100">
+                            <h6 class="text-primary mb-2">
+                                <i class="ft-folder font-small-3 ml-2"></i>
+                                دسته‌بندی
+                            </h6>
+                            <p class="mb-0 text-dark">@Model.Category</p>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <div class="info-item border rounded p-3 h-100">
+                            <h6 class="text-primary mb-2">
+                                <i class="ft-tag font-small-3 ml-2"></i>
+                                قیمت
+                            </h6>
+                            <p class="mb-0 text-success font-weight-bold">@Model.Price.ToString("n0") تومان</p>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <div class="info-item border rounded p-3 h-100">
+                            <h6 class="text-primary mb-2">
+                                <i class="ft-box font-small-3 ml-2"></i>
+                                موجودی
+                            </h6>
+                            <p class="mb-0">
+                                <span class="badge @(Model.Inventory > 0 ? "badge-success" : "badge-danger")">
+                                    @Model.Inventory
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <div class="info-item border rounded p-3 h-100">
+                            <h6 class="text-primary mb-2">
+                                <i class="ft-eye font-small-3 ml-2"></i>
+                                وضعیت نمایش
+                            </h6>
+                            <p class="mb-0">
+                                @if (Model.Displayed)
+                                {
+                                    <span class="badge badge-success">فعال</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">غیرفعال</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <div class="info-item border rounded p-3">
+                            <h6 class="text-primary mb-2">
+                                <i class="ft-file-text font-small-3 ml-2"></i>
+                                توضیحات
+                            </h6>
+                            <p class="mb-0 text-dark line-height-2">@Model.Description</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -66,96 +103,128 @@
     </div>
 </div>
 
-
-
-
-
-
-<div class="card mb-4">
-    <div class="card-header">
-        <div class="card-title-wrap bar-success">
-            <div class="card-title">تصاویر و ویژگی های محصول</div>
+<div class="row">
+    <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+        <div class="card h-100">
+            <div class="card-header">
+                <div class="card-title-wrap bar-success">
+                    <div class="card-title">ویژگی‌های محصول</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ویژگی</th>
+                                <th>مقدار</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Features)
+                            {
+                                <tr>
+                                    <td class="font-weight-bold text-primary">@item.DisplayName</td>
+                                    <td>@item.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="card-body">
-        <div class="card-block">
-            <div class="row">
-                <div class="col-4 col-sm-4">
-                    <ul class="no-list-style pr-0 text-right fa-bold">
-                        @foreach (var item in Model.Features)
-                        {
-                            <li class="mb-2">
-                                <span class="text-bold-500 primary"><a><i class="icon-frame font-small-3"></i> @item.DisplayName :</a></span>
-                                <span class="display-block overflow-hidden"> @item.Value</span>
-                            </li>
-                        }
-                    </ul>
-                </div>
-                <div class="col-8 col-sm-8 text-center">
 
+    <div class="col-12 col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <div class="card-title-wrap bar-info">
+                    <div class="card-title">تصاویر محصول</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
                     @foreach (var item in Model.Images)
                     {
-                        <figure class="col-xl-6 col-lg-4 col-sm-6 col-12">
-                            <a target="_blank" href="~/@item.Src">
-                                <img width="200" height="200" class="img-thumbnail img-fluid" src="~/@item.Src">
-                            </a>
-                        </figure>
+                        <div class="col-6 col-sm-4 col-md-3 mb-3">
+                            <div class="image-container text-center">
+                                <a target="_blank" href="~/@item.Src" class="d-block">
+                                    <img class="img-thumbnail img-fluid rounded"
+                                         src="~/@item.Src"
+                                         alt="تصویر محصول"
+                                         style="height: 120px; object-fit: cover; width: 100%;" />
+                                </a>
+                                <small class="text-muted d-block mt-1 text-truncate">
+                                    @System.IO.Path.GetFileName(item.Src)
+                                </small>
+                            </div>
+                        </div>
                     }
-
-
                 </div>
-
             </div>
-
-
         </div>
     </div>
 </div>
 
-@section Scripts
-{
-    <script>
-        function Pay() {
-            var Email = $("#Email").val();
-            var Password = $("#Password").val();
-            var postData = {
-                'Email': Email,
-                'Password': Password,
-            };
-            $.ajax({
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                type: "POST",
-                url: "Signin",
-                data: postData,
-                success: function (data) {
-                    if (data.isSuccess == true) {
-                        swal.fire(
-                            'موفق!',
-                            data.message,
-                            'success'
-                        ).then(function (isConfirm) {
-                            window.location.replace("/");
-                        });
-                    }
-                    else {
-
-                        swal.fire(
-                            'هشدار!',
-                            data.message,
-                            'warning'
-                        );
-                    }
-                },
-                error: function (request, status, error) {
-                    swal.fire(
-                        'هشدار!',
-                        request.responseText,
-                        'warning'
-                    );
-                }
-            });
+<style>
+    @@media (max-width: 768px) {
+        .info-item {
+            margin-bottom: 1rem;
         }
-    </script>
-}
 
+        .card-body {
+            padding: 1rem;
+        }
+
+        .image-container {
+            margin-bottom: 1rem;
+        }
+
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .card-header {
+            padding: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+        }
+
+        .img-thumbnail {
+            height: 100px !important;
+        }
+    }
+
+    @@media (max-width: 400px) {
+        .col-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        .info-item {
+            padding: 0.75rem;
+        }
+
+        .img-thumbnail {
+            height: 80px !important;
+        }
+    }
+
+    .info-item {
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+</style>

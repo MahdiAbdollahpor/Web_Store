@@ -1,15 +1,12 @@
-﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using Web_Store.Domain.Entities.HomePages
+﻿@using Web_Store.Domain.Entities.HomePages
 @{
     ViewData["Title"] = "Add";
     Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
 }
 
-
 <section class="basic-elements">
-
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title-wrap bar-success">
@@ -17,40 +14,35 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="px-3">
+                    <div class="px-0 px-md-3">
                         <div class="form">
                             <div class="form-body">
                                 <form method="post" class="row" enctype="multipart/form-data">
-
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
+                                    <div class="col-12 col-md-4 mb-2">
                                         <fieldset class="form-group">
-
-                                            <label for="basicInput">موقعیت نمایش تصویر</label>
-                                            <select name="imageLocation" asp-items="@Html.GetEnumSelectList<ImageLocation>()"></select>
+                                            <label for="imageLocation">موقعیت نمایش تصویر</label>
+                                            <select name="imageLocation" class="form-control" asp-items="@Html.GetEnumSelectList<ImageLocation>()"></select>
                                         </fieldset>
                                     </div>
 
-
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
+                                    <div class="col-12 col-md-4 mb-2">
                                         <fieldset class="form-group">
-
                                             <label for="basicInput">آدرس لینک</label>
-                                            <input type="text" class="form-control" name="link">
+                                            <input type="text" class="form-control" name="link" placeholder="https://example.com">
                                         </fieldset>
                                     </div>
 
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
+                                    <div class="col-12 col-md-4 mb-2">
                                         <fieldset class="form-group">
-
                                             <label for="basicInput">تصویر</label>
-                                            <input type="file" name="file" />
+                                            <input type="file" name="file" class="form-control-file" />
+                                            <small class="form-text text-muted">فرمت‌های مجاز: jpg, png, gif</small>
                                         </fieldset>
                                     </div>
 
-                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
+                                    <div class="col-12 mt-2">
                                         <fieldset class="form-group">
-                                            <br />
-                                            <button class="btn btn-success col-md-12">آپلود تصویر</button>
+                                            <button class="btn btn-success w-100">آپلود تصویر</button>
                                         </fieldset>
                                     </div>
                                 </form>
@@ -62,3 +54,34 @@
         </div>
     </div>
 </section>
+
+<style>
+    @@media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-control, .form-control-file {
+            font-size: 16px; /* جلوگیری از زوم در iOS */
+        }
+    }
+    
+    @@media (max-width: 576px) {
+        .card-header {
+            padding: 0.75rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+    }
+</style>

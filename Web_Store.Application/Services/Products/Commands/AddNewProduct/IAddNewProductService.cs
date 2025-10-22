@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Web_Store.Application.Interfaces.Contexts;
 using Web_store.Common.Dto;
 using Web_Store.Domain.Entities.Products;
-using Microsoft.AspNetCore.Hosting; // استفاده از این namespace
+using Microsoft.AspNetCore.Hosting; 
 using Microsoft.AspNetCore.Http;
 
 

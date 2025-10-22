@@ -4,18 +4,19 @@
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<div class="p-4 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+
+<div class="p-3 md:p-4 bg-white rounded-lg shadow-md max-w-full md:max-w-2xl mx-auto">
     <!-- Header -->
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">افزودن دسته‌بندی جدید</h1>
-        <p class="text-gray-600 mt-2">اطلاعات دسته‌بندی جدید را وارد کنید</p>
+    <div class="mb-4 md:mb-6">
+        <h1 class="text-xl md:text-2xl font-bold text-gray-800">افزودن دسته‌بندی جدید</h1>
+        <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">اطلاعات دسته‌بندی جدید را وارد کنید</p>
     </div>
 
     <!-- Form -->
     <form id="addCategoryForm">
         <input type="hidden" id="parentId" value="@ViewBag.parentId" />
 
-        <div class="mb-6">
+        <div class="mb-4 md:mb-6">
             <label for="Name" class="block text-sm font-medium text-gray-700 mb-2">
                 نام دسته‌بندی
             </label>
@@ -23,32 +24,32 @@
                    id="Name"
                    class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                    placeholder="نام دسته‌بندی را وارد کنید">
-            <p class="mt-1 text-sm text-gray-500">نام مناسبی برای دسته‌بندی انتخاب کنید</p>
+            <p class="mt-1 text-xs md:text-sm text-gray-500">نام مناسبی برای دسته‌بندی انتخاب کنید</p>
         </div>
 
         @if (ViewBag.parentId != null)
         {
-            <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+            <div class="mb-4 md:mb-6 p-3 md:p-4 bg-blue-50 rounded-lg">
                 <div class="flex items-center">
-                    <i class="fas fa-info-circle text-blue-500 ml-2"></i>
-                    <span class="text-sm text-blue-700">
+                    <i class="fas fa-info-circle text-blue-500 ml-1 md:ml-2"></i>
+                    <span class="text-xs md:text-sm text-blue-700">
                         این دسته‌بندی به عنوان زیرمجموعه اضافه خواهد شد
                     </span>
                 </div>
             </div>
         }
 
-        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between pt-3 md:pt-4 border-t border-gray-200 gap-3">
             <a href="~/admin/categories"
-               class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
-                <i class="fas fa-arrow-right ml-2"></i>
+               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition duration-200 order-2 md:order-1">
+                <i class="fas fa-arrow-right ml-1 md:ml-2"></i>
                 بازگشت به لیست
             </a>
 
             <button type="button"
                     onclick="addNewCategory()"
-                    class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
-                <i class="fas fa-plus ml-2"></i>
+                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition duration-200 order-1 md:order-2">
+                <i class="fas fa-plus ml-1 md:ml-2"></i>
                 افزودن دسته‌بندی
             </button>
         </div>
@@ -84,7 +85,6 @@
                     var Name = $("#Name").val();
                     var parentId = $("#parentId").val();
 
-
                     var postData = {
                         'Name': Name,
                         'parentId': parentId,
@@ -109,17 +109,13 @@
                                         window.location.href = '/Admin/Categories';
                                     }
                                 });
-
-
                             }
                             else {
-
                                 swal.fire(
                                     'هشدار!',
                                     data.message,
                                     'warning'
                                 );
-
                             }
                         },
                         error: function (request, status, error) {
@@ -129,17 +125,14 @@
                                 'warning'
                             );
                         }
-
                     });
-
                 }
             })
-
         }
-
-       
     </script>
 }
+
+
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
