@@ -10,54 +10,70 @@
     int.TryParse(Context.Request.Query["pageSize"], out pageSize);
 }
 
-<div class="col-lg-12 col-md-12 col-xs-12 pl">
+<div class="col-12 pl">
     <div class="shop-archive-content mt-3 d-block">
-        <div class="archive-header">
-            <h2 class="archive-header-title">آرشیو محصولات</h2>
-            <div class="sort-tabs mt-0 d-inline-block pr">
-                <h4>مرتب&zwnj;سازی بر اساس :</h4>
+        <!-- هدر آرشیو -->
+        <div class="archive-header mb-4">
+            <div class="row align-items-center">
+                <div class="col-12 col-md-6 mb-3 mb-md-0">
+                    <h2 class="archive-header-title mb-0">آرشیو محصولات</h2>
+                </div>
+                <div class="col-12 col-md-6 text-md-left">
+                    <div class="sort-tabs d-inline-block w-100">
+                        <h4 class="d-none d-md-inline-block mb-0">مرتب‌سازی بر اساس :</h4>
+
+                        <!-- مرتب‌سازی موبایل -->
+                        <div class="d-md-none">
+                            <select class="form-control sort-select-mobile" onchange="window.location.href = this.value">
+                                <option value="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=MostVisited">پربازدیدترین</option>
+                                <option value="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=Bestselling">پرفروش‌ترین</option>
+                                <option value="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=Most-Popular">محبوب‌ترین</option>
+                                <option value="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=newest">جدیدترین</option>
+                                <option value="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=cheapest">ارزان‌ترین</option>
+                                <option value="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=most-expensive">گران‌ترین</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="nav-sort-tabs-res">
+
+            <!-- تب‌های مرتب‌سازی دسکتاپ -->
+            <div class="nav-sort-tabs-res d-none d-md-block mt-3">
                 <ul class="nav sort-tabs-options" id="myTab" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=MostVisited" role="tab" aria-controls="Most-visited" aria-selected="true">پربازدیدترین</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=Bestselling" role="tab" aria-controls="Bestselling" aria-selected="false">پرفروش&zwnj;ترین&zwnj;</a>
+                        <a class="nav-link" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=Bestselling" role="tab" aria-controls="Bestselling" aria-selected="false">پرفروش‌ترین</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=Most-Popular" role="tab" aria-controls="Most-Popular" aria-selected="false">محبوب&zwnj;ترین</a>
+                        <a class="nav-link" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=Most-Popular" role="tab" aria-controls="Most-Popular" aria-selected="false">محبوب‌ترین</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=newest" role="tab" aria-controls="newest" aria-selected="false">جدیدترین</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=cheapest" role="tab" aria-controls="cheapest" aria-selected="false">ارزان&zwnj;ترین</a>
+                        <a class="nav-link" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=cheapest" role="tab" aria-controls="cheapest" aria-selected="false">ارزان‌ترین</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=most-expensive" role="tab" aria-controls="most-expensive" aria-selected="false">گران&zwnj;ترین</a>
+                        <a class="nav-link" href="~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=most-expensive" role="tab" aria-controls="most-expensive" aria-selected="false">گران‌ترین</a>
                     </li>
                 </ul>
             </div>
         </div>
+
+        <!-- محصولات -->
         <div class="product-items">
             <div class="tab-content" id="myTabContent">
-
-
-
                 <div class="tab-pane fade show active" id="Most-visited" role="tabpanel" aria-labelledby="Most-visited-tab">
                     <div class="row">
                         @foreach (var item in Model.Products)
                         {
-
-
-                            <div class="col-lg-3 col-md-3 col-xs-12 order-1 d-block mb-3">
-                                <section class="product-box product product-type-simple">
-                                    <div class="thumb">
-                                        <a href="~/products/detail/@item.Id" class="d-block">
-
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2 mb-4">
+                                <section class="product-box product product-type-simple h-100">
+                                    <div class="thumb position-relative">
+                                        <a href="~/products/detail/@item.Id" class="d-block product-image-link">
                                             <div class="product-rate">
-
                                                 @for (int i = 1; i <= item.Star; i++)
                                                 {
                                                     <i class="fa fa-star active"></i>
@@ -67,48 +83,356 @@
                                                     <i class="fa fa-star"></i>
                                                 }
                                             </div>
-                                            <img width="400" height="300" src="~/@item.ImageSrc">
+                                            <img width="400" height="300" src="~/@item.ImageSrc" class="img-fluid product-image" alt="@item.Title">
                                         </a>
                                     </div>
-                                    <div class="title">
-                                        <a href="~/products/detail/@item.Id">  @item.Title</a>
+                                    <div class="title mt-2">
+                                        <a href="~/products/detail/@item.Id" class="product-title">@item.Title</a>
                                     </div>
-                                    <div class="price">
-                                        <span class="amount">
+                                    <div class="price mt-1">
+                                        <span class="amount text-success font-weight-bold">
                                             @item.Price.ToString("n0")
-                                            <span>تومان</span>
+                                            <span class="currency">تومان</span>
                                         </span>
                                     </div>
                                 </section>
                             </div>
                         }
                     </div>
+
+                    <!-- پیام عدم وجود محصول -->
+                    @if (!Model.Products.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fa fa-search fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">محصولی یافت نشد</h4>
+                            <p class="text-muted">متأسفانه هیچ محصولی با معیارهای جستجوی شما مطابقت ندارد.</p>
+                        </div>
+                    }
                 </div>
-
-
             </div>
         </div>
-        <div class="pagination-product">
-            <nav aria-label="Page navigation example">
-                <paging total-records="@Model.TotalRow"
-                        page-no="@pageNumber==0?1:pageNumber"
-                        page-size="@pageSize==0?20:pageNumber"
-                        show-prev-next="true"
-                        show-total-pages="false"
-                        show-total-records="false"
-                        show-page-size-nav="true"
-                        show-first-numbered-page="true"
-                        show-last-numbered-page="true"
-                        query-string-key-page-no="Page"
-                        query-string-key-page-size="PageSize"
-                        query-string-value="@@(Request.QueryString.Value)"
-                        gap-size="2">
-                </paging>
 
-            </nav>
-        </div>
+        <!-- صفحه‌بندی -->
+        @if (Model.Products.Any())
+        {
+            <div class="pagination-product mt-5">
+                <nav aria-label="Page navigation example">
+                    <div class="pagination-container">
+                        <paging total-records="@Model.TotalRow"
+                                page-no="@(pageNumber == 0 ? 1 : pageNumber)"
+                                page-size="@(pageSize == 0 ? 20 : pageSize)"
+                                show-prev-next="true"
+                                show-total-pages="false"
+                                show-total-records="false"
+                                show-page-size-nav="true"
+                                show-first-numbered-page="true"
+                                show-last-numbered-page="true"
+                                query-string-key-page-no="Page"
+                                query-string-key-page-size="PageSize"
+                                
+                                gap-size="2">
+                        </paging>
+                    </div>
+                </nav>
+            </div>
+        }
     </div>
 </div>
 
+<style>
+    /* استایل‌های پایه */
+    .shop-archive-content {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
 
+    .archive-header-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        border-bottom: 3px solid #007bff;
+        padding-bottom: 10px;
+    }
 
+    .sort-tabs-options .nav-link {
+        color: #6c757d;
+        padding: 8px 16px;
+        border: 1px solid #dee2e6;
+        margin-left: 5px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+        .sort-tabs-options .nav-link.active,
+        .sort-tabs-options .nav-link:hover {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+    .product-box {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        transition: all 0.3s ease;
+        background: #fff;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .product-box:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+
+    .product-title {
+        color: #333;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        text-decoration: none;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 2.8em;
+    }
+
+        .product-title:hover {
+            color: #007bff;
+        }
+
+    .product-rate {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(255,255,255,0.9);
+        padding: 4px 8px;
+        border-radius: 12px;
+        z-index: 2;
+    }
+
+        .product-rate .fa-star {
+            color: #ddd;
+            font-size: 0.8rem;
+        }
+
+            .product-rate .fa-star.active {
+                color: #ffc107;
+            }
+
+    .sort-select-mobile {
+        width: 100%;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 8px 12px;
+        background: #fff;
+    }
+
+    /* استایل‌های ریسپانسیو */
+    @@media (max-width: 768px) {
+        .shop-archive-content {
+            padding: 15px;
+            margin: 10px;
+        }
+
+        .archive-header-title {
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .product-box {
+            padding: 10px;
+        }
+
+        .product-image {
+            height: 150px;
+        }
+
+        .product-title {
+            font-size: 0.85rem;
+            height: 2.6em;
+        }
+
+        .price .amount {
+            font-size: 0.9rem;
+        }
+
+        .sort-tabs h4 {
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .shop-archive-content {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .archive-header-title {
+            font-size: 1.2rem;
+        }
+
+        .product-box {
+            padding: 8px;
+        }
+
+        .product-image {
+            height: 120px;
+        }
+
+        .product-title {
+            font-size: 0.8rem;
+            height: 2.4em;
+        }
+
+        .price .amount {
+            font-size: 0.85rem;
+        }
+
+        .product-rate {
+            top: 5px;
+            left: 5px;
+            padding: 2px 6px;
+        }
+
+            .product-rate .fa-star {
+                font-size: 0.7rem;
+            }
+    }
+
+    @@media (max-width: 400px) {
+        .col-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .product-image {
+            height: 180px;
+        }
+
+        .product-title {
+            font-size: 0.9rem;
+            height: auto;
+            -webkit-line-clamp: 3;
+        }
+    }
+
+    /* استایل‌های صفحه‌بندی */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .page-link {
+        color: #007bff;
+        border: 1px solid #dee2e6;
+        margin: 2px;
+        border-radius: 4px;
+        padding: 8px 12px;
+    }
+
+    .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    @@media (max-width: 576px) {
+        .page-link {
+            padding: 6px 10px;
+            font-size: 0.9rem;
+            margin: 1px;
+        }
+
+        .pagination {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* انیمیشن‌ها */
+    .product-image-link {
+        position: relative;
+        overflow: hidden;
+        border-radius: 6px;
+    }
+
+    .product-image {
+        transition: transform 0.3s ease;
+    }
+
+    .product-image-link:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    /* نمایش تعداد محصولات در موبایل */
+    .products-count-mobile {
+        background: #f8f9fa;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    @@media (max-width: 768px) {
+        .products-count-mobile {
+            display: block;
+        }
+    }
+
+    @@media (min-width: 769px) {
+        .products-count-mobile {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    // تنظیم مقدار select در موبایل بر اساس URL فعلی
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const ordering = urlParams.get('ordering');
+        const sortSelect = document.querySelector('.sort-select-mobile');
+
+        if (sortSelect && ordering) {
+            const optionValue = `~/products?Searchkey=@Context.Request.Query["SearchKey"]&CatId=@Context.Request.Query["CatId"]&ordering=${ordering}`;
+            sortSelect.value = optionValue;
+        }
+    });
+
+    // نمایش تعداد محصولات در موبایل
+    document.addEventListener('DOMContentLoaded', function () {
+        const productCount = @Model.Products.Count();
+        const totalProducts = @Model.TotalRow;
+
+        if (window.innerWidth <= 768) {
+            const productsCountElement = document.createElement('div');
+            productsCountElement.className = 'products-count-mobile';
+            productsCountElement.innerHTML = `نمایش <strong>${productCount}</strong> محصول از <strong>${totalProducts}</strong> محصول`;
+
+            const productItems = document.querySelector('.product-items');
+            if (productItems) {
+                productItems.insertBefore(productsCountElement, productItems.firstChild);
+            }
+        }
+    });
+</script>

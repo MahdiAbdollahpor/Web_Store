@@ -6,66 +6,77 @@
 
 <section class="basic-elements">
     <div class="row">
-        <div class="col-sm-12">
-            <h2 class="content-header">فرم ثبت نام کاربر جدید</h2>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title-wrap bar-success">
-                        <h4 class="card-title mb-0">اطلاعات کاربر جدید را وارد نمایید</h4>
+                        <h4 class="card-title mb-0">ثبت نام کاربر جدید</h4>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="px-3">
+                    <div class="px-0 px-md-3">
                         <div class="form">
                             <div class="form-body">
                                 <div class="row">
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-                                            <label for="basicInput">نام و نام خانوادگی</label>
-                                            <input type="text" class="form-control" id="fullname">
-                                        </fieldset>
-                                    </div>
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-                                            <label for="helpInputTop">پست الکترونیک</label>
-                                            <small class="text-muted"><i>info@bugeto.net</i></small>
-                                            <input type="text" class="form-control" id="email">
-                                        </fieldset>
+                                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                                        <div class="form-group">
+                                            <label for="fullname" class="form-label">نام و نام خانوادگی *</label>
+                                            <input type="text" class="form-control" id="fullname" placeholder="نام کامل کاربر">
+                                        </div>
                                     </div>
 
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-                                            <label for="basicSelect">نقش</label>
+                                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                                        <div class="form-group">
+                                            <label for="email" class="form-label">پست الکترونیک *</label>
+                                            <input type="email" class="form-control" id="email" placeholder="info@bugeto.net">
+                                            <small class="form-text text-muted">ایمیل معتبر وارد کنید</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                                        <div class="form-group">
+                                            <label for="RoleId" class="form-label">نقش کاربر *</label>
                                             <select class="form-control" id="RoleId" name="Role" asp-items="@ViewBag.Roles">
+                                                <option value="">انتخاب نقش</option>
                                             </select>
-                                            <p><small class="text-muted">سطح دسترسی کاربر مورد نظر را تعیین کنید</small></p>
-
-                                        </fieldset>
+                                            <small class="form-text text-muted">سطح دسترسی کاربر مورد نظر را تعیین کنید</small>
+                                        </div>
                                     </div>
 
-
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-                                            <label for="disabledInput">رمز عبور</label>
-                                            <input type="password" class="form-control" id="Password">
-                                        </fieldset>
-                                    </div>
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-                                            <label for="disabledInput">تکرار رمز عبور</label>
-                                            <input type="password" class="form-control" id="RePassword">
-                                        </fieldset>
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label for="Password" class="form-label">رمز عبور *</label>
+                                            <input type="password" class="form-control" id="Password" placeholder="رمز عبور">
+                                            <small class="form-text text-muted">حداقل 6 کاراکتر</small>
+                                        </div>
                                     </div>
 
-                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-                                            <br />
-                                            <a onclick="Registeruser()" class="btn btn-success col-md-12">تکمیل ثبت نام </a>
-                                        </fieldset>
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label for="RePassword" class="form-label">تکرار رمز عبور *</label>
+                                            <input type="password" class="form-control" id="RePassword" placeholder="تکرار رمز عبور">
+                                            <small class="form-text text-muted">رمز عبور باید یکسان باشد</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mt-4">
+                                        <div class="form-group">
+                                            <button onclick="Registeruser()" class="btn btn-success btn-lg w-100">
+                                                <i class="fa fa-user-plus"></i> تکمیل ثبت نام
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mt-3">
+                                        <div class="alert alert-info">
+                                            <h6 class="alert-heading mb-2">راهنما:</h6>
+                                            <ul class="mb-0 small">
+                                                <li>فیلدهای ستاره‌دار (*) اجباری هستند</li>
+                                                <li>رمز عبور باید حداقل 6 کاراکتر باشد</li>
+                                                <li>ایمیل باید منحصر به فرد و معتبر باشد</li>
+                                                <li>نقش کاربر سطح دسترسی او را تعیین می‌کند</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -77,35 +88,48 @@
     </div>
 </section>
 
-
-
-
 @section Scripts
 {
-
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
-
 
     <script>
         function Registeruser() {
             swal.fire({
                 title: 'ثبت نام کاربر',
-                text: "آیا میخواهید ثبت نام کاربر را انجام دهید؟",
+                text: "آیا می‌خواهید ثبت نام کاربر را انجام دهید؟",
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'بله ثبت نام انجام شود',
+                confirmButtonText: 'بله، ثبت نام انجام شود',
                 cancelButtonText: 'خیر'
             }).then((result) => {
                 if (result.value) {
-
                     var fullname = $("#fullname").val();
                     var email = $("#email").val();
                     var RoleId = $("#RoleId").val();
                     var Password = $("#Password").val();
                     var RePassword = $("#RePassword").val();
+
+                    // اعتبارسنجی اولیه
+                    if (!fullname || !email || !RoleId || !Password || !RePassword) {
+                        swal.fire(
+                            'خطا!',
+                            'لطفا تمام فیلدهای ضروری را پر کنید',
+                            'error'
+                        );
+                        return;
+                    }
+
+                    if (Password !== RePassword) {
+                        swal.fire(
+                            'خطا!',
+                            'رمز عبور و تکرار آن یکسان نیستند',
+                            'error'
+                        );
+                        return;
+                    }
 
                     var postData = {
                         'fullname': fullname,
@@ -130,27 +154,119 @@
                                 ).then(function (isConfirm) {
                                     location.reload();
                                 });
-
-
                             }
                             else {
-
                                 swal.fire(
                                     'هشدار!',
                                     data.message,
                                     'warning'
                                 );
-
                             }
                         },
                         error: function (request, status, error) {
-                            alert(request.responseText);
+                            swal.fire(
+                                'خطا!',
+                                'خطا در ارتباط با سرور',
+                                'error'
+                            );
                         }
-
                     });
-
                 }
             })
         }
     </script>
 }
+
+<style>
+    @@media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            font-size: 16px; /* جلوگیری از زوم در iOS */
+        }
+
+        .btn-lg {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .alert {
+            font-size: 0.9rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .card-header {
+            padding: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-text {
+            font-size: 0.8rem;
+        }
+    }
+
+    @@media (max-width: 400px) {
+        .card-body {
+            padding: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem;
+        }
+
+        .alert {
+            padding: 0.75rem;
+        }
+    }
+
+    .form-label {
+        color: #495057;
+    }
+
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+        transition: all 0.3s ease;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            transform: translateY(-2px);
+        }
+
+    .alert-info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+    }
+
+    .alert-heading {
+        color: #0c5460;
+        font-size: 1rem;
+    }
+</style>

@@ -1,0 +1,47 @@
+﻿@using Web_Store.Application.Services.Orders.Queries.IGetUserServiceForAdmin
+@model UserOrderDto
+@{
+    ViewData["Title"] = "جزئیات کاربر";
+    Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
+}
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <section id="configuration">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">جزئیات کاربر</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>شناسه کاربر:</label>
+                                        <p class="form-control-static">@Model.UserId</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>نام کامل:</label>
+                                        <p class="form-control-static">@Model.FullName</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>ایمیل:</label>
+                                        <p class="form-control-static">@Model.Email</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <a href="~/admin/Orders/Index/">بازگشت به لیست سفارشات</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

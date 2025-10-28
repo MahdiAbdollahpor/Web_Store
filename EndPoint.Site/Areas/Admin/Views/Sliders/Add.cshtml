@@ -3,12 +3,9 @@
     Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
 }
 
-
-
 <section class="basic-elements">
-
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title-wrap bar-success">
@@ -16,31 +13,48 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="px-3">
+                    <div class="px-0 px-md-3">
                         <div class="form">
                             <div class="form-body">
                                 <form asp-action="Add" method="post" class="row" enctype="multipart/form-data">
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-
-                                            <label for="basicInput">آدرس لینک</label>
-                                            <input type="text" class="form-control" name="link">
-                                        </fieldset>
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label for="link" class="form-label">آدرس لینک</label>
+                                            <input type="text" class="form-control" name="link" placeholder="https://example.com">
+                                            <small class="form-text text-muted">این فیلد اختیاری است</small>
+                                        </div>
                                     </div>
 
-                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-
-                                            <label for="basicInput">تصویر</label>
-                                            <input type="file" name="file" />
-                                        </fieldset>
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label for="file" class="form-label">تصویر اسلایدر *</label>
+                                            <div class="custom-file">
+                                                <input type="file" name="file" class="custom-file-input" id="customFile" required>
+                                                <label class="custom-file-label" for="customFile">انتخاب فایل تصویر</label>
+                                            </div>
+                                            <small class="form-text text-muted">
+                                                فرمت‌های مجاز: JPG, PNG, GIF, WebP - حداکثر سایز: 5MB
+                                            </small>
+                                        </div>
                                     </div>
 
-                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
-                                        <fieldset class="form-group">
-                                            <br />
-                                            <button class="btn btn-success col-md-12">آپلود تصویر</button>
-                                        </fieldset>
+                                    <div class="col-12 mt-2">
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-success w-100 btn-lg">
+                                                <i class="ft-upload"></i> آپلود تصویر و ایجاد اسلایدر
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mt-3">
+                                        <div class="alert alert-info">
+                                            <h6 class="alert-heading">راهنما:</h6>
+                                            <ul class="mb-0">
+                                                <li>سایز پیشنهادی برای تصاویر اسلایدر: 1200x400 پیکسل</li>
+                                                <li>برای کیفیت بهتر از تصاویر با وضوح بالا استفاده کنید</li>
+                                                <li>لینک اختیاری است و در صورت وارد نکردن، اسلایدر بدون لینک خواهد بود</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -52,4 +66,86 @@
     </div>
 </section>
 
+<style>
+    @@media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
 
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control, .custom-file-input {
+            font-size: 16px; /* جلوگیری از زوم در iOS */
+        }
+
+        .btn-lg {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .alert {
+            font-size: 0.9rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .card-header {
+            padding: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .custom-file-label::after {
+            content: "انتخاب";
+        }
+    }
+
+    @@media (max-width: 400px) {
+        .card-body {
+            padding: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem;
+        }
+
+        .alert {
+            padding: 0.75rem;
+        }
+    }
+
+    .custom-file-label::after {
+        content: "انتخاب فایل";
+    }
+
+    .alert ul {
+        padding-right: 1rem;
+        margin-bottom: 0;
+    }
+
+    .alert li {
+        margin-bottom: 0.25rem;
+    }
+</style>
+
+<script>
+    // نمایش نام فایل انتخاب شده
+    document.querySelector('.custom-file-input').addEventListener('change', function (e) {
+        var fileName = document.getElementById("customFile").files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
+</script>

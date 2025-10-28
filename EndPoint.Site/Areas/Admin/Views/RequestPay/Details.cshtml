@@ -1,0 +1,141 @@
+﻿@using Web_Store.Application.Services.Fainances.Queries.GetRequestPayDetail
+@model RequestPayDetailDto
+@{
+    ViewData["Title"] = "جزئیات فاکتور";
+    Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
+}
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <section id="configuration">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">جزئیات فاکتور شماره @Model.Id</h4>
+                            <div>
+                                <a href="@Url.Action("DownloadPdf", new { id = Model.Id })" class="btn btn-success">
+                                    <i class="fa fa-download"></i> دانلود PDF
+                                </a>
+                                <a href="@Url.Action("Index")" class="btn btn-secondary">بازگشت</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- اطلاعات اصلی فاکتور -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h6>اطلاعات فاکتور:</h6>
+                                    <p><strong>شماره فاکتور:</strong> @Model.Id</p>
+                                    <p><strong>تاریخ ایجاد:</strong> @Model.InsertTime.ToString("yyyy/MM/dd HH:mm")</p>
+                                    <p><strong>مبلغ کل:</strong> <span class="text-success font-weight-bold">@Model.Amount.ToString("N0") تومان</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>اطلاعات پرداخت:</h6>
+                                    <p>
+                                        <strong>وضعیت:</strong>
+                                        @if (Model.IsPay)
+                                        {
+                                            <span class="badge badge-success">پرداخت شده</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">پرداخت نشده</span>
+                                        }
+                                    </p>
+                                    @if (Model.IsPay)
+                                    {
+                                        <p><strong>تاریخ پرداخت:</strong> @Model.PayDate?.ToString("yyyy/MM/dd HH:mm")</p>
+                                        <p><strong>کد پیگیری (RefId):</strong> <code>@Model.RefId</code></p>
+                                        <p><strong>Authority:</strong> <code>@Model.Authority</code></p>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- اطلاعات مشتری -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6>اطلاعات مشتری:</h6>
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <strong>نام:</strong> @Model.UserName
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <strong>ایمیل:</strong> @Model.UserEmail
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <strong>کد کاربر:</strong> @Model.UserId
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- لیست سفارشات -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6>سفارشات مرتبط:</h6>
+                                    @foreach (var order in Model.Orders)
+                                    {
+                                        <div class="card mb-3">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">سفارش شماره @order.OrderId</h6>
+                                                <small class="text-muted">
+                                                    تاریخ: @order.OrderDate.ToString("yyyy/MM/dd HH:mm") |
+                                                    وضعیت: @order.OrderState |
+                                                    تعداد محصولات: @order.ProductsCount
+                                                </small>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>نام محصول</th>
+                                                                <th>قیمت واحد</th>
+                                                                <th>تعداد</th>
+                                                                <th>جمع</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var item in order.OrderItems)
+                                                            {
+                                                                <tr>
+                                                                    <td>@item.ProductName</td>
+                                                                    <td>@item.Price.ToString("N0") تومان</td>
+                                                                    <td>@item.Count</td>
+                                                                    <td>@item.TotalPrice.ToString("N0") تومان</td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td colspan="3" class="text-left"><strong>جمع این سفارش:</strong></td>
+                                                                <td><strong>@order.OrderItems.Sum(oi => oi.TotalPrice).ToString("N0") تومان</strong></td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- جمع کل -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="alert alert-info text-center">
+                                        <h5 class="mb-0">جمع کل فاکتور: @Model.Amount.ToString("N0") تومان</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

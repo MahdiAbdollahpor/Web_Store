@@ -1,4 +1,5 @@
 ﻿@using Web_Store.Application.Services.Orders.Queries.GetOrdersForAdmin
+@using Web_Store.Domain.Entities.Orders
 @using Web_store.Common
 @model List<OrdersDto>
 @{
@@ -8,6 +9,27 @@
 
 <div class="content-wrapper">
     <div class="container-fluid">
+
+        <!-- نمایش پیام‌ها -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
         <!-- Zero configuration table -->
         <section id="configuration">
             <div class="row">
@@ -27,14 +49,17 @@
                                     <p class="card-text text-muted">لیست سفارشات فروشگاه باگتو</p>
                                 </div>
 
+                                <!-- فیلتر وضعیت سفارش -->
                                 <form method="get" class="row mb-3">
-                                    <div class="col-12 col-md-8 col-lg-6">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" name="serchkey" placeholder="جستجو در سفارشات...">
-                                            <button class="btn btn-success">
-                                                <i class="ft-search"></i>
-                                                <span class="d-none d-md-inline">جستجو</span>
-                                            </button>
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group">
+                                            <label for="orderState">فیلتر بر اساس وضعیت:</label>
+                                            <select class="form-control" name="orderState" id="orderState" onchange="this.form.submit()">
+                                                <option value="">همه وضعیت‌ها</option>
+                                                <option value="0" selected="@(ViewContext.HttpContext.Request.Query["orderState"] == "0")">در حال پردازش</option>
+                                                <option value="1" selected="@(ViewContext.HttpContext.Request.Query["orderState"] == "1")">لغو شده</option>
+                                                <option value="2" selected="@(ViewContext.HttpContext.Request.Query["orderState"] == "2")">تحویل شده</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </form>
@@ -60,7 +85,7 @@
                                                     </td>
                                                     <td class="min-tablet">
                                                         <span class="d-md-none fw-bold">تاریخ ثبت: </span>
-                                                        @item.InsetTime
+                                                        @item.InsetTime.ToString("yyyy/MM/dd HH:mm")
                                                     </td>
                                                     <td class="min-tablet">
                                                         <span class="d-md-none fw-bold">شماره فاکتور: </span>
@@ -73,18 +98,42 @@
                                                         }
                                                         <span class="badge
                                                             @(item.OrderState == Web_Store.Domain.Entities.Orders.OrderState.Processing ? "badge-warning" :
+                                                              item.OrderState == Web_Store.Domain.Entities.Orders.OrderState.Canceled ? "badge-danger" :
                                                               item.OrderState == Web_Store.Domain.Entities.Orders.OrderState.Delivered ? "badge-success" :
                                                               "badge-info")">
                                                             @state
                                                         </span>
+
+                                                        <!-- Dropdown برای تغییر وضعیت -->
+                                                        <div class="btn-group mt-1">
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                تغییر وضعیت
+                                                            </button>
+                                                            <div class="dropdown-menu">
+                                                                <form method="post" asp-action="ChangeOrderState">
+                                                                    <input type="hidden" name="orderId" value="@item.OrderId" />
+                                                                    <button type="submit" name="newOrderState" value="0" class="dropdown-item @(item.OrderState == OrderState.Processing ? "active" : "")">
+                                                                        در حال پردازش
+                                                                    </button>
+                                                                    <button type="submit" name="newOrderState" value="1" class="dropdown-item @(item.OrderState == OrderState.Canceled ? "active" : "")">
+                                                                        لغو شده
+                                                                    </button>
+                                                                    <button type="submit" name="newOrderState" value="2" class="dropdown-item @(item.OrderState == OrderState.Delivered ? "active" : "")">
+                                                                        تحویل شده
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         <div class="btn-group-vertical btn-group-sm d-md-flex flex-md-row" role="group">
-                                                            <a class="btn btn-info btn-sm mb-1 mb-md-0 me-md-1">
+                                                            <a asp-area="Admin" asp-controller="Orders" asp-action="UserDetails" asp-route-userId="@item.UserId"
+                                                               class="btn btn-info btn-sm mb-1 mb-md-0 me-md-1">
                                                                 <i class="ft-user"></i>
                                                                 <span class="d-none d-md-inline">کاربر</span>
                                                             </a>
-                                                            <a class="btn btn-danger btn-sm">
+                                                            <a asp-area="Admin" asp-controller="Orders" asp-action="Invoice" asp-route-orderId="@item.OrderId"
+                                                               class="btn btn-danger btn-sm">
                                                                 <i class="ft-file"></i>
                                                                 <span class="d-none d-md-inline">فاکتور</span>
                                                             </a>
@@ -263,3 +312,16 @@
             }
     }
 </style>
+
+
+
+@section Scripts {
+    <script>
+        // برای بستن اتوماتیک alert بعد از 5 ثانیه
+        $(document).ready(function () {
+            setTimeout(function () {
+                $('.alert').alert('close');
+            }, 5000);
+        });
+    </script>
+}

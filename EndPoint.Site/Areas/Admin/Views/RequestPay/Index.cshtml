@@ -7,70 +7,370 @@
 
 <div class="content-wrapper">
     <div class="container-fluid">
-        <!-- Zero configuration table -->
         <section id="configuration">
-
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <div class="card-title-wrap bar-success">
-                                <h4 class="card-title">فاکتور ها</h4>
+                        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                            <div class="card-title-wrap bar-success mb-2 mb-md-0">
+                                <h4 class="card-title mb-0">فاکتورها</h4>
+                            </div>
+                            <div class="d-none d-md-block">
+                                <p class="card-text text-muted mb-0">لیست فاکتورهای فروشگاه باگتو</p>
                             </div>
                         </div>
                         <div class="card-body collapse show">
                             <div class="card-block card-dashboard">
-                                <p class="card-text">لیست فاکتورهای فروشگاه باگتو</p>
+                                <div class="d-md-none mb-3">
+                                    <p class="card-text text-muted">لیست فاکتورهای فروشگاه باگتو</p>
+                                </div>
 
-                                <form method="get" class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                    <fieldset class="form-group">
-                                        <input type="text" class="form-control" name="serchkey">
-                                        <button class="btn btn-success">جستجو</button>
-                                    </fieldset>
+                                <form method="get" class="row mb-3">
+                                    <div class="col-12 col-md-8 col-lg-6">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" name="serchkey" placeholder="جستجو در فاکتورها...">
+                                            <button class="btn btn-success">
+                                                <i class="ft-search"></i>
+                                                <span class="d-none d-md-inline">جستجو</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </form>
 
-                                <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
-                                    <div class="col-sm-12">
-                                        <table class="table table-striped table-bordered zero-configuration dataTable" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
-                                            <thead>
-                                                <tr role="row">
-                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="  activate to sort column descending" style="width: 222px;"> شماره فاکتور</th>
-                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="  activate to sort column descending" style="width: 222px;"> مبلغ</th>
-                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="  activate to sort column descending" style="width: 222px;"> کاربر</th>
-                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="  activate to sort column descending" style="width: 222px;"> پرداخت شده؟</th>
-                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="  activate to sort column descending" style="width: 222px;"> تاریخ پرداخت</th>
-                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="  activate to sort column descending" style="width: 222px;">  RefId </th>
-                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="  activate to sort column descending" style="width: 222px;">  Authority </th>
-                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="  activate to sort column descending" style="width: 222px;">    </th>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered zero-configuration dataTable" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+                                        <thead>
+                                            <tr role="row">
+                                                <th class="sorting_asc">شماره فاکتور</th>
+                                                <th class="sorting_asc min-tablet">مبلغ</th>
+                                                <th class="sorting_asc min-tablet">کاربر</th>
+                                                <th class="sorting_asc">وضعیت پرداخت</th>
+                                                <th class="sorting_asc min-desktop">تاریخ پرداخت</th>
+                                                <th class="sorting_asc min-desktop">RefId</th>
+                                                <th class="sorting_asc min-desktop">Authority</th>
+                                                <th class="sorting_asc text-center">عملیات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr role="row" class="odd">
+                                                    <td class="sorting_1">
+                                                        <span class="d-md-none fw-bold">شماره فاکتور: </span>
+                                                        @item.Id
+                                                    </td>
+                                                    <td class="min-tablet">
+                                                        <span class="d-md-none fw-bold">مبلغ: </span>
+                                                        <span class="text-success font-weight-bold">@item.Amount.ToString("n0") تومان</span>
+                                                    </td>
+                                                    <td class="min-tablet">
+                                                        <span class="d-md-none fw-bold">کاربر: </span>
+                                                        @item.UserName
+                                                    </td>
+                                                    <td>
+                                                        <span class="d-md-none fw-bold">پرداخت شده: </span>
+                                                        @if (item.IsPay)
+                                                        {
+                                                            <span class="badge badge-success">
+                                                                <i class="fa fa-check d-none d-md-inline"></i> پرداخت شده
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge badge-danger">
+                                                                <i class="fa fa-times d-none d-md-inline"></i> پرداخت نشده
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                    <td class="min-desktop">
+                                                        <span class="d-md-none fw-bold">تاریخ پرداخت: </span>
+                                                        @if (item.PayDate != null)
+                                                        {
+                                                            <span class="text-muted">@item.PayDate</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">-</span>
+                                                        }
+                                                    </td>
+                                                    <td class="min-desktop">
+                                                        <span class="d-md-none fw-bold">RefId: </span>
+                                                        
+                                                            <code class="small">@item.RefId</code>
+                                                        
+                                                        
+                                                    </td>
+                                                    <td class="min-desktop">
+                                                        <span class="d-md-none fw-bold">Authority: </span>
+                                                        @if (!string.IsNullOrEmpty(item.Authority))
+                                                        {
+                                                            <code class="small">@item.Authority</code>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">-</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <div class="btn-group-vertical btn-group-sm d-md-flex flex-md-row justify-content-center" role="group">
+                                                            <button class="btn btn-info btn-sm mb-1 mb-md-0 me-md-1"
+                                                                    title="مشاهده جزئیات"
+                                                                    onclick="showInvoiceDetails(@item.Id)">
+                                                                <i class="fa fa-eye"></i>
+                                                                <span class="d-none d-md-inline">جزئیات</span>
+                                                            </button>
+                                                            <button class="btn btn-warning btn-sm"
+                                                                    title="دانلود فاکتور"
+                                                                    onclick="downloadInvoice(@item.Id)">
+                                                                <i class="fa fa-download"></i>
+                                                                <span class="d-none d-md-inline">دانلود</span>
+                                                            </button>
+                                                        </div>
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                                                @foreach (var item in Model)
-                                                {
-                                                    <tr role="row" class="odd">
-                                                        <td class="sorting_1">@item.Id</td>
-                                                        <td>@item.Amount.ToString("n0")</td>
-                                                        <td>@item.UserName</td>
-                                                        <td>@item.IsPay</td>
-                                                        <td>@item.PayDate</td>
-                                                        <td>@item.RefId</td>
-                                                        <td>@item.Authority</td>
-                                                        <td>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
+                                <div class="row mt-3">
+                                    <div class="col-sm-12 col-md-5">
+                                        <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                            نمایش 1 تا 10 از 57 سطرها
+                                        </div>
                                     </div>
-                                </div><div class="row"><div class="col-sm-12 col-md-5"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">نمایش 1 تا 10 از 57 سطرها</div></div><div class="col-sm-12 col-md-7"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="0" tabindex="0" class="page-link">قبلی</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="1" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="2" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="3" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="4" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="5" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="6" tabindex="0" class="page-link">6</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" data-dt-idx="7" tabindex="0" class="page-link">بعدی</a></li></ul></div></div></div>
+                                    <div class="col-sm-12 col-md-7">
+                                        <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                            <ul class="pagination justify-content-center justify-content-md-end">
+                                                <li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous">
+                                                    <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="0" tabindex="0" class="page-link">
+                                                        <i class="ft-chevron-right"></i>
+                                                        <span class="d-none d-md-inline">قبلی</span>
+                                                    </a>
+                                                </li>
+                                                <li class="paginate_button page-item active">
+                                                    <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="1" tabindex="0" class="page-link">1</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="2" tabindex="0" class="page-link">2</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="3" tabindex="0" class="page-link">3</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="4" tabindex="0" class="page-link">4</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="5" tabindex="0" class="page-link">5</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="6" tabindex="0" class="page-link">6</a>
+                                                </li>
+                                                <li class="paginate_button page-item next" id="DataTables_Table_0_next">
+                                                    <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="7" tabindex="0" class="page-link">
+                                                        <span class="d-none d-md-inline">بعدی</span>
+                                                        <i class="ft-chevron-left"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </section>
     </div>
 </div>
 
+@section Scripts {
+    <script>
+        function showInvoiceDetails(invoiceId) {
+            window.location.href = '@Url.Action("Details")' + '?id=' + invoiceId;
+        }
+
+        function downloadInvoice(invoiceId) {
+            window.location.href = '@Url.Action("DownloadPdf")' + '?id=' + invoiceId;
+        }
+    </script>
+}
+
+<style>
+    @@media (max-width: 1200px) {
+        .min-desktop {
+            display: none;
+        }
+
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .min-tablet {
+            display: none;
+        }
+
+        .table-responsive {
+            border: 1px solid #dee2e6;
+        }
+
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .btn-group-vertical {
+            width: 100%;
+        }
+
+            .btn-group-vertical .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+        .card-header {
+            padding: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+        }
+
+        code {
+            font-size: 0.7rem;
+            word-break: break-all;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .table td, .table th {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .dataTables_info {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .pagination {
+            flex-wrap: wrap;
+        }
+
+        .page-item .page-link {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .input-group {
+            flex-direction: column;
+        }
+
+            .input-group .form-control {
+                border-radius: 0.25rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .input-group .btn {
+                border-radius: 0.25rem;
+                width: 100%;
+            }
+    }
+
+    @@media (max-width: 400px) {
+        .table td, .table th {
+            padding: 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+        }
+    }
+
+    /* استایل برای نمایش بهتر در موبایل */
+    @@media (max-width: 768px) {
+        .table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            background: #fff;
+        }
+
+        .table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none;
+            border-bottom: 1px solid #f8f9fa;
+            padding: 0.75rem;
+        }
+
+            .table tbody td:last-child {
+                border-bottom: none;
+                justify-content: center;
+            }
+
+            .table tbody td:before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: #495057;
+                margin-left: 0.5rem;
+            }
+    }
+
+    /* استایل‌های عمومی بهبود یافته */
+    .table th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #212529;
+    }
+
+    .text-success {
+        color: #28a745 !important;
+    }
+
+    code {
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: 'Courier New', Courier, monospace;
+    }
+</style>

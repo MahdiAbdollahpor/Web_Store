@@ -7,7 +7,7 @@
 
 <section class="basic-elements">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title-wrap bar-warning">
@@ -15,45 +15,56 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="px-3">
+                    <div class="px-0 px-md-3">
                         <div class="form">
                             <div class="form-body">
                                 <form asp-action="Edit" method="post" class="row" enctype="multipart/form-data">
                                     <input type="hidden" name="id" value="@Model.Id" />
 
-                                    <div class="col-xl-6 col-lg-6 col-md-12 mb-1">
-                                        <div class="form-group">
-                                            <label>تصویر فعلی</label>
-                                            <div>
-                                                <img src="~/@Model.Src" alt="اسلایدر فعلی" style="max-width: 300px; max-height: 150px;" class="img-thumbnail" />
+                                    <div class="col-12 mb-4">
+                                        <div class="form-group text-center">
+                                            <label class="form-label d-block mb-3">تصویر فعلی</label>
+                                            <div class="current-image-container">
+                                                <img src="~/@Model.Src" alt="اسلایدر فعلی" class="img-fluid rounded shadow current-slider-image" />
+                                                <div class="mt-2">
+                                                    <small class="text-muted">سایز واقعی: @Model.Src</small>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-xl-6 col-lg-6 col-md-12 mb-1">
+                                    <div class="col-12 col-md-6 mb-3">
                                         <div class="form-group">
-                                            <label>تصویر جدید (در صورت عدم انتخاب، تصویر فعلی حفظ می‌شود)</label>
-                                            <input type="file" name="file" class="form-control" />
-                                            <small class="form-text text-muted">فرمت‌های مجاز: jpg, png, gif, webp</small>
+                                            <label for="file" class="form-label">تصویر جدید</label>
+                                            <div class="custom-file">
+                                                <input type="file" name="file" class="custom-file-input" id="customFile">
+                                                <label class="custom-file-label" for="customFile">انتخاب فایل جدید</label>
+                                            </div>
+                                            <small class="form-text text-muted">
+                                                در صورت عدم انتخاب، تصویر فعلی حفظ می‌شود<br>
+                                                فرمت‌های مجاز: JPG, PNG, GIF, WebP
+                                            </small>
                                         </div>
                                     </div>
 
-                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
+                                    <div class="col-12 col-md-6 mb-3">
                                         <div class="form-group">
-                                            <label>آدرس لینک</label>
+                                            <label for="link" class="form-label">آدرس لینک</label>
                                             <input type="text" class="form-control" name="link" value="@Model.Link" placeholder="https://example.com">
+                                            <small class="form-text text-muted">این فیلد اختیاری است</small>
                                         </div>
                                     </div>
 
-                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
+                                    <div class="col-12 mt-4">
                                         <div class="form-group">
-                                            <br />
-                                            <button type="submit" class="btn btn-warning col-md-12">
-                                                <i class="ft-save"></i> ذخیره تغییرات
-                                            </button>
-                                            <a href="~/admin/Sliders/" class="btn btn-secondary col-md-12 mt-1">
-                                                <i class="ft-x"></i> انصراف
-                                            </a>
+                                            <div class="d-flex flex-column flex-md-row gap-2">
+                                                <button type="submit" class="btn btn-warning flex-fill btn-lg">
+                                                    <i class="ft-save"></i> ذخیره تغییرات
+                                                </button>
+                                                <a href="~/admin/Sliders/" class="btn btn-secondary flex-fill">
+                                                    <i class="ft-x"></i> انصراف
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </form>
@@ -65,3 +76,115 @@
         </div>
     </div>
 </section>
+
+<style>
+    .current-slider-image {
+        max-width: 100%;
+        max-height: 300px;
+        border: 3px solid #f8f9fa;
+    }
+
+    .current-image-container {
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+
+    @@media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .current-slider-image {
+            max-height: 200px;
+        }
+
+        .current-image-container {
+            padding: 0.75rem;
+        }
+
+        .btn-lg {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .d-flex.flex-column .btn {
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .card-header {
+            padding: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+        }
+
+        .current-slider-image {
+            max-height: 150px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .custom-file-label::after {
+            content: "انتخاب";
+        }
+    }
+
+    @@media (max-width: 400px) {
+        .card-body {
+            padding: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .current-slider-image {
+            max-height: 120px;
+        }
+
+        .current-image-container {
+            padding: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem;
+        }
+    }
+
+    .custom-file-label::after {
+        content: "انتخاب فایل";
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #212529;
+    }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+            color: #212529;
+        }
+</style>
+
+<script>
+    // نمایش نام فایل انتخاب شده
+    document.querySelector('.custom-file-input').addEventListener('change', function (e) {
+        var fileName = document.getElementById("customFile").files[0]?.name || "انتخاب فایل جدید";
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
+</script>

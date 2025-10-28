@@ -1,3 +1,5 @@
+using DinkToPdf.Contracts;
+using DinkToPdf;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Web_store.Common.Roles;
@@ -9,7 +11,9 @@ using Web_Store.Application.Services.Common.Queries.GetHomePageImages;
 using Web_Store.Application.Services.Common.Queries.GetMenuItem;
 using Web_Store.Application.Services.Common.Queries.GetSlider;
 using Web_Store.Application.Services.Fainances.Commands.AddRequestPay;
+using Web_Store.Application.Services.Fainances.Commands.GenerateInvoicePdf;
 using Web_Store.Application.Services.Fainances.Commands.ZarinPalService;
+using Web_Store.Application.Services.Fainances.Queries.GetRequestPayDetail;
 using Web_Store.Application.Services.Fainances.Queries.GetRequestPayForAdmin;
 using Web_Store.Application.Services.Fainances.Queries.GetRequestPayService;
 using Web_Store.Application.Services.HomePages.AddHomePageImages;
@@ -19,8 +23,11 @@ using Web_Store.Application.Services.HomePages.EditHomePageImages;
 using Web_Store.Application.Services.HomePages.GetAllHomePageImages;
 using Web_Store.Application.Services.HomePages.GetHomePageImageById;
 using Web_Store.Application.Services.Orders.Commands.AddNewOrder;
+using Web_Store.Application.Services.Orders.Commands.ChangeOrderStateService;
 using Web_Store.Application.Services.Orders.Queries.GetOrdersForAdmin;
 using Web_Store.Application.Services.Orders.Queries.GetUserOrders;
+using Web_Store.Application.Services.Orders.Queries.IGetOrderInvoiceServiceForAdmin;
+using Web_Store.Application.Services.Orders.Queries.IGetUserServiceForAdmin;
 using Web_Store.Application.Services.Products.Commands.EditProduct;
 using Web_Store.Application.Services.Products.FacadPattern;
 using Web_Store.Application.Services.Sliders;
@@ -87,6 +94,13 @@ builder.Services.AddScoped<IGetUserOrdersService, GetUserOrdersService>();
 builder.Services.AddScoped<IGetOrdersForAdminService, GetOrdersForAdminService>();
 builder.Services.AddHttpClient<ZarinPalService>();
 builder.Services.AddScoped<IEditProductService, EditProductService>();
+builder.Services.AddScoped<IGetUserService, GetUserService>();
+builder.Services.AddScoped<IGetOrderInvoiceService, GetOrderInvoiceService>();
+builder.Services.AddScoped<IChangeOrderStateService, ChangeOrderStateService>();
+builder.Services.AddScoped<IGetRequestPayDetailService, GetRequestPayDetailService>();
+builder.Services.AddScoped<IGenerateInvoicePdfService, GenerateInvoicePdfService>();
+
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
 //FacadeInject
 builder.Services.AddScoped<IProductFacad, ProductFacad>();
