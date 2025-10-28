@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Web_store.Common\Web_store.Common.csproj" />
+    <ProjectReference Include="..\Web_Store.Domain\Web_Store.Domain.csproj" />
     <ProjectReference Include="..\Web_Store.Persistence\Web_Store.Persistence.csproj" />
   </ItemGroup>
 

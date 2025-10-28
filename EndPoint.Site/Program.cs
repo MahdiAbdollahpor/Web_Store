@@ -39,6 +39,7 @@ using Web_Store.Application.Services.Users.Commands.UserSatusChange;
 using Web_Store.Application.Services.Users.Queries.GetRoles;
 using Web_Store.Application.Services.Users.Queries.GetUsers;
 using Web_Store.Persistence.Contexts;
+using Web_Store.Application.Services.Users.Queries.GetUserInfoForUserPanel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,6 +100,8 @@ builder.Services.AddScoped<IGetOrderInvoiceService, GetOrderInvoiceService>();
 builder.Services.AddScoped<IChangeOrderStateService, ChangeOrderStateService>();
 builder.Services.AddScoped<IGetRequestPayDetailService, GetRequestPayDetailService>();
 builder.Services.AddScoped<IGenerateInvoicePdfService, GenerateInvoicePdfService>();
+builder.Services.AddScoped<IGetUserInfoForUserPanel, GetUserInfoForUserPanel>();
+
 
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 

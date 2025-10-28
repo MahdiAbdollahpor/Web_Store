@@ -1,0 +1,45 @@
+﻿@using Web_Store.Application.Services.Users.Queries.GetUserInfoForUserPanel
+@{
+    var currentUser = new UserInfoDtoForDashbord(); // اینجا باید از سرویس دریافت شود
+}
+
+<div class="dashboard-sidebar">
+    <div class="user-profile-card">
+        <div class="user-avatar">
+            <img src="~/SiteTemplate/assets/images/man.png" alt="پروفایل کاربر">
+        </div>
+        <div class="user-info">
+            <h4>@User.Identity.Name</h4>
+            <p>@currentUser.Email</p>
+        </div>
+    </div>
+
+    <nav class="dashboard-nav">
+        <ul>
+            <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">
+                <a href="/Dashboard" class="nav-link">
+                    <i class="mdi mdi-view-dashboard"></i>
+                    داشبورد
+                </a>
+            </li>
+            <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">
+                <a href="/Dashboard/Orders" class="nav-link">
+                    <i class="mdi mdi-cart"></i>
+                    سفارشات من
+                </a>
+            </li>
+            <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Profile" ? "active" : "")">
+                <a href="/Dashboard/Profile" class="nav-link">
+                    <i class="mdi mdi-account"></i>
+                    پروفایل کاربری
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/authentication/SignOut" class="nav-link">
+                    <i class="mdi mdi-logout"></i>
+                    خروج
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>

@@ -14,6 +14,8 @@
     <!-- main-style---------------------------------->
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/main.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/responsive.css">
+
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <!-- header-------------------------------->
@@ -55,7 +57,7 @@
                                                 <div class="dropdown-menu">
                                                     <ul class="account-uls mb-0">
                                                         <li class="account-item">
-                                                            <a href="#" class="account-link">پنل کاربری</a>
+                                                            <a href="~/Dashboard/Index" class="account-link">پنل کاربری</a>
                                                         </li>
                                                         <li class="account-item">
                                                             <a href="#" class="account-link">سفارشات من</a>

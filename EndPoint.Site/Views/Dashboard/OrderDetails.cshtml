@@ -1,0 +1,177 @@
+﻿
+@model GetUserOrdersDto
+@using Web_Store.Application.Services.Orders.Queries.GetUserOrders
+@using Web_Store.Domain.Entities.Orders
+@{
+    ViewData["Title"] = "جزئیات سفارش";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-main">
+    <div class="row">
+        <!-- سایدبار -->
+        <div class="col-lg-3 col-md-4">
+            @await Html.PartialAsync("_DashboardSidebar")
+        </div>
+
+        <!-- محتوای اصلی -->
+        <div class="col-lg-9 col-md-8">
+            <div class="dashboard-content">
+                <div class="dashboard-header">
+                    <h1>جزئیات سفارش #@Model.OrderId</h1>
+                    <div class="order-status-header">
+                        <span class="status-badge @GetOrderStatusClass(Model.OrderState)">
+                            @GetOrderStatusText(Model.OrderState)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="order-details">
+                    <div class="order-summary">
+                        <div class="summary-card">
+                            <h4>خلاصه سفارش</h4>
+                            <div class="summary-items">
+                                <div class="summary-item">
+                                    <span>تعداد محصولات:</span>
+                                    <span>@Model.OrderDetails.Count</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>مبلغ کل:</span>
+                                    <span>@Model.OrderDetails.Sum(od => od.Price * od.Count).ToString("N0") تومان</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>شماره پیگیری پرداخت:</span>
+                                    <span>@Model.RequestPayId</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-products">
+                        <h4>محصولات سفارش</h4>
+                        <div class="products-list">
+                            @foreach (var item in Model.OrderDetails)
+                            {
+                                <div class="product-item">
+                                    <div class="product-info">
+                                        <h5>@item.ProductName</h5>
+                                        <div class="product-details">
+                                            <span>قیمت واحد: @item.Price.ToString("N0") تومان</span>
+                                            <span>تعداد: @item.Count</span>
+                                            <span>جمع: @((item.Price * item.Count).ToString("N0")) تومان</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="order-actions">
+                        <a href="/Dashboard/Orders" class="btn btn-outline-secondary">
+                            بازگشت به لیست سفارشات
+                        </a>
+                        <a href="/Dashboard/DownloadInvoice?requestPayId=@Model.RequestPayId" class="btn btn-primary">
+                            دانلود فاکتور
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .order-status-header {
+            margin-top: 10px;
+        }
+
+        .order-details {
+            margin-top: 30px;
+        }
+
+        .summary-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+            .summary-card h4 {
+                margin-bottom: 15px;
+                color: #333;
+            }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            .summary-item:last-child {
+                border-bottom: none;
+            }
+
+        .order-products h4 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .products-list {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .product-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fff;
+        }
+
+            .product-item:last-child {
+                border-bottom: none;
+            }
+
+        .product-info h5 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .product-details {
+            display: flex;
+            gap: 20px;
+            color: #666;
+        }
+
+        .order-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+}
+
+@{
+    string GetOrderStatusClass(OrderState state)
+    {
+        return state.ToString().ToLower();
+    }
+
+    string GetOrderStatusText(OrderState state)
+    {
+        switch (state)
+        {
+            case OrderState.Processing:
+                return "در حال پردازش";
+            case OrderState.Delivered:
+                return "تحویل شده";
+            case OrderState.Canceled:
+                return "لغو شده";
+            default:
+                return state.ToString();
+        }
+    }
+}
+
