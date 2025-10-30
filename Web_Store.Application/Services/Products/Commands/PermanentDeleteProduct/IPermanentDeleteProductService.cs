@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Web_store.Common.Dto;
 using Web_Store.Application.Interfaces.Contexts;
+using Web_Store.Application.Services.Logs.Commands;
 using Web_Store.Domain.Entities.Products;
 
 namespace Web_Store.Application.Services.Products.Commands.PermanentDeleteProduct
@@ -16,11 +17,13 @@ namespace Web_Store.Application.Services.Products.Commands.PermanentDeleteProduc
     {
         private readonly IDataBaseContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly ILogService _logService;
 
-        public PermanentDeleteProductService(IDataBaseContext context, IWebHostEnvironment environment)
+        public PermanentDeleteProductService(IDataBaseContext context, IWebHostEnvironment environment, ILogService logService)
         {
             _context = context;
             _environment = environment;
+            _logService = logService;
         }
 
         public ResultDto Execute(long productId)
@@ -57,6 +60,8 @@ namespace Web_Store.Application.Services.Products.Commands.PermanentDeleteProduc
                 // حذف محصول از دیتابیس
                 _context.Products.Remove(product);
                 _context.SaveChanges();
+
+                _logService.LogWarning("PermanentDelete", "Product", productId, $"محصول به طور دائمی حذف شد");
 
                 return new ResultDto
                 {

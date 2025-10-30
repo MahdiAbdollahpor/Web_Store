@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Web_Store.Application.Interfaces.Contexts;
 using Web_Store.Application.Interfaces.FacadPatterns;
+using Web_Store.Application.Services.Logs.Commands;
 using Web_Store.Application.Services.Products.Commands.AddNewCategory;
 using Web_Store.Application.Services.Products.Commands.AddNewProduct;
 using Web_Store.Application.Services.Products.Commands.DeleteCategory;
@@ -31,11 +32,13 @@ namespace Web_Store.Application.Services.Products.FacadPattern
     {
         private readonly IDataBaseContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly ILogService _logService;
 
-        public ProductFacad(IDataBaseContext context, IWebHostEnvironment environment)
+        public ProductFacad(IDataBaseContext context, IWebHostEnvironment environment, ILogService logService)
         {
             _context = context;
             _environment = environment;
+            _logService = logService;
         }
 
         private AddNewCategoryService _addNewCategory;
@@ -62,7 +65,7 @@ namespace Web_Store.Application.Services.Products.FacadPattern
         {
             get
             {
-                return _addNewProductService = _addNewProductService ?? new AddNewProductService(_context, _environment);
+                return _addNewProductService = _addNewProductService ?? new AddNewProductService(_context, _environment, _logService);
             }
         }
 
@@ -116,7 +119,7 @@ namespace Web_Store.Application.Services.Products.FacadPattern
         {
             get
             {
-                return _editProductService = _editProductService ?? new EditProductService(_context, _environment);
+                return _editProductService = _editProductService ?? new EditProductService(_context, _environment, _logService );
             }
         }
 
@@ -126,7 +129,7 @@ namespace Web_Store.Application.Services.Products.FacadPattern
         {
             get
             {
-                return _deleteProductService = _deleteProductService ?? new DeleteProductService(_context);
+                return _deleteProductService = _deleteProductService ?? new DeleteProductService(_context, _logService);
             }
         }
 
@@ -153,7 +156,7 @@ namespace Web_Store.Application.Services.Products.FacadPattern
         {
             get
             {
-                return _permanentDeleteProductService = _permanentDeleteProductService ?? new PermanentDeleteProductService(_context, _environment);
+                return _permanentDeleteProductService = _permanentDeleteProductService ?? new PermanentDeleteProductService(_context, _environment, _logService);
             }
         }
 

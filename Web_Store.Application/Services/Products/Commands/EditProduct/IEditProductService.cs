@@ -1,15 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 using Web_store.Common.Dto;
 using Web_Store.Application.Interfaces.Contexts;
+using Web_Store.Application.Services.Logs.Commands;
 using Web_Store.Domain.Entities.Products;
 
 namespace Web_Store.Application.Services.Products.Commands.EditProduct
@@ -23,11 +19,13 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
     {
         private readonly IDataBaseContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly ILogService _logService;
 
-        public EditProductService(IDataBaseContext context, IWebHostEnvironment environment)
+        public EditProductService(IDataBaseContext context, IWebHostEnvironment environment, ILogService logService)
         {
             _context = context;
             _environment = environment;
+            _logService = logService;
         }
 
         public ResultDto Execute(RequestEditProductDto request)
@@ -47,6 +45,20 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
                         Message = "محصول یافت نشد"
                     };
                 }
+
+                // ذخیره مقادیر قدیمی برای لاگ
+                var oldValues = new
+                {
+                    Name = product.Name,
+                    Brand = product.Brand,
+                    Description = product.Description,
+                    Price = product.Price,
+                    Inventory = product.Inventory,
+                    Displayed = product.Displayed,
+                    CategoryId = product.CategoryId,
+                    Features = product.ProductFeatures?.Select(f => new { f.DisplayName, f.Value }).ToList(),
+                    ImagesCount = product.ProductImages?.Count ?? 0
+                };
 
                 // آپدیت اطلاعات پایه محصول
                 product.Name = request.Name;
@@ -69,15 +81,40 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
 
                 _context.SaveChanges();
 
+                // ذخیره مقادیر جدید برای لاگ
+                var newValues = new
+                {
+                    Name = product.Name,
+                    Brand = product.Brand,
+                    Description = product.Description,
+                    Price = product.Price,
+                    Inventory = product.Inventory,
+                    Displayed = product.Displayed,
+                    CategoryId = product.CategoryId,
+                    Features = product.ProductFeatures?.Select(f => new { f.DisplayName, f.Value }).ToList(),
+                    ImagesCount = product.ProductImages?.Count ?? 0
+                };
+
+                // ایجاد لاگ
+                _logService.LogInformation(
+                    "Update",
+                    "Product",
+                    product.Id,
+                    $"محصول {request.Name} ویرایش شد",
+                    JsonSerializer.Serialize(oldValues, new JsonSerializerOptions { WriteIndented = true }),
+                    JsonSerializer.Serialize(newValues, new JsonSerializerOptions { WriteIndented = true })
+                );
+
                 return new ResultDto
                 {
                     IsSuccess = true,
                     Message = "محصول با موفقیت ویرایش شد"
-
                 };
             }
             catch (Exception ex)
             {
+                _logService.LogError("Update", "Product", request.Id, $"خطا در ویرایش محصول: {ex.Message}");
+
                 return new ResultDto
                 {
                     IsSuccess = false,
@@ -162,10 +199,8 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
                 });
             }
         }
-
-        
-
     }
+
     public class RequestEditProductDto
     {
         public long Id { get; set; }
@@ -202,5 +237,3 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
         public string Value { get; set; }
     }
 }
-
-

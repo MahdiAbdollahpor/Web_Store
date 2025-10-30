@@ -9,13 +9,14 @@ using Web_Store.Application.Interfaces.Contexts;
 using Web_Store.Domain.Entities.Carts;
 using Web_Store.Domain.Entities.Finances;
 using Web_Store.Domain.Entities.HomePages;
+using Web_Store.Domain.Entities.Logs;
 using Web_Store.Domain.Entities.Orders;
 using Web_Store.Domain.Entities.Products;
 using Web_Store.Domain.Entities.Users;
 
 namespace Web_Store.Persistence.Contexts
 {
-    public class DataBaseContext : DbContext , IDataBaseContext
+    public class DataBaseContext : DbContext, IDataBaseContext
     {
         public DataBaseContext(DbContextOptions options) : base(options)
         {
@@ -34,6 +35,8 @@ namespace Web_Store.Persistence.Contexts
         public DbSet<RequestPay> RequestPays { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<Log> Logs { get; set; } 
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +57,11 @@ namespace Web_Store.Persistence.Contexts
             // اعمال عدم تکراری بودن ایمیل
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
+            // اعمال ایندکس برای بهبود عملکرد جستجو در لاگ‌ها
+            modelBuilder.Entity<Log>().HasIndex(l => l.EntityName);
+            modelBuilder.Entity<Log>().HasIndex(l => l.Action);
+            modelBuilder.Entity<Log>().HasIndex(l => l.InsertTime);
+            modelBuilder.Entity<Log>().HasIndex(l => l.UserEmail);
 
             //-- عدم نمایش اطلاعات حذف شده
             ApplyQueryFilter(modelBuilder);
@@ -75,6 +83,9 @@ namespace Web_Store.Persistence.Contexts
             modelBuilder.Entity<RequestPay>().HasQueryFilter(p => !p.IsRemoved);
             modelBuilder.Entity<Order>().HasQueryFilter(p => !p.IsRemoved);
             modelBuilder.Entity<OrderDetail>().HasQueryFilter(p => !p.IsRemoved);
+            modelBuilder.Entity<Log>().HasQueryFilter(p => !p.IsRemoved);
+
+
         }
 
         private void SeedData(ModelBuilder modelBuilder)

@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Web_Store.Application.Interfaces.Contexts;
 using Web_store.Common.Dto;
+using Web_Store.Application.Services.Logs;
 using Web_Store.Domain.Entities.Products;
-using Microsoft.AspNetCore.Hosting; 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-
+using Web_Store.Application.Services.Logs.Commands;
 
 namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
 {
@@ -22,12 +24,13 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
     {
         private readonly IDataBaseContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly ILogService _logService;
 
-        
-        public AddNewProductService(IDataBaseContext context, IWebHostEnvironment environment)
+        public AddNewProductService(IDataBaseContext context, IWebHostEnvironment environment, ILogService logService)
         {
             _context = context;
             _environment = environment;
+            _logService = logService;
         }
 
         public ResultDto Execute(RequestAddNewProductDto request)
@@ -93,6 +96,27 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
 
                 _context.SaveChanges();
 
+                // ایجاد لاگ برای افزودن محصول
+                var productData = new
+                {
+                    Name = product.Name,
+                    Brand = product.Brand,
+                    Price = product.Price,
+                    Inventory = product.Inventory,
+                    Category = category.Name,
+                    ImagesCount = productImages.Count,
+                    FeaturesCount = productFeatures.Count
+                };
+
+                _logService.LogInformation(
+                    "Create",
+                    "Product",
+                    product.Id,
+                    $"محصول جدید {request.Name} افزوده شد",
+                    null, // برای ایجاد، oldValues null است
+                    JsonSerializer.Serialize(productData, new JsonSerializerOptions { WriteIndented = true })
+                );
+
                 return new ResultDto
                 {
                     IsSuccess = true,
@@ -101,6 +125,8 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
             }
             catch (Exception ex)
             {
+                _logService.LogError("Create", "Product", 0, $"خطا در افزودن محصول: {ex.Message}");
+
                 return new ResultDto
                 {
                     IsSuccess = false,

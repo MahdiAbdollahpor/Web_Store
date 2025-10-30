@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Web_store.Common.Dto;
 using Web_Store.Application.Interfaces.Contexts;
+using Web_Store.Application.Services.Logs.Commands;
 using Web_Store.Domain.Entities.Products;
 
 namespace Web_Store.Application.Services.Products.Commands.DeleteProduct
@@ -15,12 +16,13 @@ namespace Web_Store.Application.Services.Products.Commands.DeleteProduct
     public class DeleteProductService : IDeleteProductService
     {
         private readonly IDataBaseContext _context;
-       
+        private readonly ILogService _logService;
 
-        public DeleteProductService(IDataBaseContext context)
+
+        public DeleteProductService(IDataBaseContext context, ILogService logService)
         {
             _context = context;
-           
+            _logService = logService;
         }
 
         public ResultDto Execute(long productId)
@@ -43,6 +45,8 @@ namespace Web_Store.Application.Services.Products.Commands.DeleteProduct
                 product.IsRemoved = true;
                 product.RemoveTime = DateTime.Now;
                 _context.SaveChanges();
+
+                _logService.LogInformation("SoftDelete", "Product", productId, $"محصول به سطل زباله منتقل شد");
 
                 return new ResultDto
                 {
