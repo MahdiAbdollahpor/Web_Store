@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Web_Store.Application.Services.Fainances.Commands.GenerateInvoicePdf;
 using Web_Store.Application.Services.Fainances.Queries.GetRequestPayDetail;
+using Web_Store.Application.Services.Orders.Queries.GetOrderDetailsService;
 using Web_Store.Application.Services.Orders.Queries.GetUserOrders;
 using Web_Store.Application.Services.Users.Queries.GetUserInfoForUserPanel;
 
@@ -15,17 +16,20 @@ namespace EndPoint.Site.Controllers
         private readonly IGetUserOrdersService _getUserOrders;
         private readonly IGetRequestPayDetailService _getRequestPayDetail;
         private readonly IGenerateInvoicePdfService _generateInvoicePdf;
+        private readonly IGetOrderDetailsService _getOrderDetails;
 
         public DashboardController(
             IGetUserInfoForUserPanel getUserInfo,
             IGetUserOrdersService getUserOrders,
             IGetRequestPayDetailService getRequestPayDetail,
-            IGenerateInvoicePdfService generateInvoicePdf)
+            IGenerateInvoicePdfService generateInvoicePdf,
+            IGetOrderDetailsService getOrderDetails)
         {
             _getUserInfo = getUserInfo;
             _getUserOrders = getUserOrders;
             _getRequestPayDetail = getRequestPayDetail;
             _generateInvoicePdf = generateInvoicePdf;
+            _getOrderDetails = getOrderDetails;
         }
 
         public IActionResult Index()
@@ -60,22 +64,15 @@ namespace EndPoint.Site.Controllers
         public IActionResult OrderDetails(long orderId)
         {
             var userId = GetCurrentUserId();
-            var ordersResult = _getUserOrders.Execute(userId);
+            var result = _getOrderDetails.Execute(orderId, userId);
 
-            if (!ordersResult.IsSuccess)
+            if (!result.IsSuccess)
             {
-                TempData["ErrorMessage"] = "خطا در دریافت اطلاعات سفارش";
+                TempData["ErrorMessage"] = result.Message;
                 return RedirectToAction("Orders");
             }
 
-            var order = ordersResult.Data?.FirstOrDefault(o => o.OrderId == orderId);
-            if (order == null)
-            {
-                TempData["ErrorMessage"] = "سفارش یافت نشد";
-                return RedirectToAction("Orders");
-            }
-
-            return View(order);
+            return View(result.Data);
         }
 
         public IActionResult RequestPayDetail(long requestPayId)

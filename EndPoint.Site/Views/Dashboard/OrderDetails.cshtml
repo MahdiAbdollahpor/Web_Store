@@ -1,47 +1,288 @@
 ﻿
-@model GetUserOrdersDto
-@using Web_Store.Application.Services.Orders.Queries.GetUserOrders
+
+
+@model OrderDetailsDto
+@using Web_Store.Application.Services.Orders.Queries.GetOrderDetailsService
 @using Web_Store.Domain.Entities.Orders
 @{
     ViewData["Title"] = "جزئیات سفارش";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-main">
-    <div class="row">
-        <!-- سایدبار -->
-        <div class="col-lg-3 col-md-4">
-            @await Html.PartialAsync("_DashboardSidebar")
-        </div>
+@section Styles {
+    <style>
+        .order-details-container {
+            background: #f8f9fa;
+            min-height: 80vh;
+            padding: 30px 0;
+        }
 
-        <!-- محتوای اصلی -->
-        <div class="col-lg-9 col-md-8">
-            <div class="dashboard-content">
-                <div class="dashboard-header">
-                    <h1>جزئیات سفارش #@Model.OrderId</h1>
-                    <div class="order-status-header">
-                        <span class="status-badge @GetOrderStatusClass(Model.OrderState)">
-                            @GetOrderStatusText(Model.OrderState)
-                        </span>
+        .order-details-content {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            padding: 30px;
+        }
+
+        .order-details-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .order-details-header h1 {
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 28px;
+        }
+
+        .order-status-header {
+            margin-top: 10px;
+        }
+
+        .status-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-badge.processing {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-badge.delivered {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-badge.cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .summary-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #eef1f6;
+        }
+
+        .summary-card h4 {
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+            font-size: 20px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+
+        .summary-items {
+            display: grid;
+            gap: 15px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-item span:first-child {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .summary-item span:last-child {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .order-products {
+            margin-bottom: 30px;
+        }
+
+        .order-products h4 {
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .products-list {
+            border: 1px solid #eef1f6;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .product-item {
+            padding: 20px;
+            border-bottom: 1px solid #eef1f6;
+            background: #fff;
+            transition: background-color 0.3s ease;
+        }
+
+        .product-item:hover {
+            background: #f8f9fa;
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-info h5 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .product-details {
+            display: flex;
+            gap: 30px;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .product-details span {
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .order-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: flex-start;
+        }
+
+        .btn-outline-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* ریسپانسیو */
+        @@media (max-width: 768px) {
+            .order-details-container {
+                padding: 15px 0;
+            }
+
+            .order-details-content {
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            .product-details {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .order-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .order-details-header h1 {
+                font-size: 24px;
+            }
+
+            .summary-card {
+                padding: 20px;
+            }
+
+            .product-item {
+                padding: 15px;
+            }
+
+            .product-info h5 {
+                font-size: 16px;
+            }
+        }
+    </style>
+}
+
+<div class="order-details-container">
+    <div class="container-main">
+        <div class="row">
+            <!-- سایدبار -->
+            <div class="col-lg-3 col-md-4">
+                @await Html.PartialAsync("_DashboardSidebar")
+            </div>
+
+            <!-- محتوای اصلی -->
+            <div class="col-lg-9 col-md-8">
+                <div class="order-details-content">
+                    <div class="order-details-header">
+                        <h1>جزئیات سفارش #@Model.OrderId</h1>
+                        <div class="order-status-header">
+                            <span class="status-badge @GetOrderStatusClass(Model.OrderState)">
+                                @GetOrderStatusText(Model.OrderState)
+                            </span>
+                        </div>
+                        <p class="text-muted">تاریخ ثبت سفارش: @Model.InsertTime.ToString("yyyy/MM/dd - HH:mm")</p>
                     </div>
-                </div>
 
-                <div class="order-details">
                     <div class="order-summary">
                         <div class="summary-card">
                             <h4>خلاصه سفارش</h4>
                             <div class="summary-items">
                                 <div class="summary-item">
                                     <span>تعداد محصولات:</span>
-                                    <span>@Model.OrderDetails.Count</span>
+                                    <span>@Model.OrderDetails.Count محصول</span>
                                 </div>
                                 <div class="summary-item">
                                     <span>مبلغ کل:</span>
-                                    <span>@Model.OrderDetails.Sum(od => od.Price * od.Count).ToString("N0") تومان</span>
+                                    <span>@Model.TotalAmount.ToString("N0") تومان</span>
                                 </div>
                                 <div class="summary-item">
                                     <span>شماره پیگیری پرداخت:</span>
                                     <span>@Model.RequestPayId</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>وضعیت پرداخت:</span>
+                                    <span class="text-success">پرداخت شده</span>
                                 </div>
                             </div>
                         </div>
@@ -57,8 +298,8 @@
                                         <h5>@item.ProductName</h5>
                                         <div class="product-details">
                                             <span>قیمت واحد: @item.Price.ToString("N0") تومان</span>
-                                            <span>تعداد: @item.Count</span>
-                                            <span>جمع: @((item.Price * item.Count).ToString("N0")) تومان</span>
+                                            <span>تعداد: @item.Count عدد</span>
+                                            <span>جمع: @item.TotalPrice.ToString("N0") تومان</span>
                                         </div>
                                     </div>
                                 </div>
@@ -68,10 +309,10 @@
 
                     <div class="order-actions">
                         <a href="/Dashboard/Orders" class="btn btn-outline-secondary">
-                            بازگشت به لیست سفارشات
+                            ← بازگشت به لیست سفارشات
                         </a>
                         <a href="/Dashboard/DownloadInvoice?requestPayId=@Model.RequestPayId" class="btn btn-primary">
-                            دانلود فاکتور
+                            📄 دانلود فاکتور
                         </a>
                     </div>
                 </div>
@@ -79,79 +320,6 @@
         </div>
     </div>
 </div>
-
-@section Styles {
-    <style>
-        .order-status-header {
-            margin-top: 10px;
-        }
-
-        .order-details {
-            margin-top: 30px;
-        }
-
-        .summary-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-            .summary-card h4 {
-                margin-bottom: 15px;
-                color: #333;
-            }
-
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-            .summary-item:last-child {
-                border-bottom: none;
-            }
-
-        .order-products h4 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .products-list {
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .product-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            background: #fff;
-        }
-
-            .product-item:last-child {
-                border-bottom: none;
-            }
-
-        .product-info h5 {
-            margin: 0 0 10px 0;
-            color: #333;
-        }
-
-        .product-details {
-            display: flex;
-            gap: 20px;
-            color: #666;
-        }
-
-        .order-actions {
-            margin-top: 30px;
-            display: flex;
-            gap: 10px;
-        }
-    </style>
-}
 
 @{
     string GetOrderStatusClass(OrderState state)

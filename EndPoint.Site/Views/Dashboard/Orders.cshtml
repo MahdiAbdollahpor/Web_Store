@@ -1,119 +1,186 @@
-﻿
-
-
-
-@model List<GetUserOrdersDto>
+﻿@model List<GetUserOrdersDto>
 @using Web_Store.Application.Services.Orders.Queries.GetUserOrders
 @using Web_Store.Domain.Entities.Orders
 @{
     ViewData["Title"] = "سفارشات من";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<div class="container-main">
-    <div class="row">
-        <!-- سایدبار -->
-        <div class="col-lg-3 col-md-4">
-            @await Html.PartialAsync("_DashboardSidebar")
-        </div>
-
-        <!-- محتوای اصلی -->
-        <div class="col-lg-9 col-md-8">
-            <div class="dashboard-content">
-                <div class="dashboard-header">
-                    <h1>سفارشات من</h1>
-                    <p>مدیریت و پیگیری سفارشات</p>
-                </div>
-
-                @if (Model?.Any() == true)
-                {
-                    <div class="orders-list">
-                        @foreach (var order in Model)
-                        {
-                            <div class="order-card">
-                                <div class="order-header">
-                                    <div class="order-info">
-                                        <h4>سفارش #@order.OrderId</h4>
-                                        <span class="order-date">@DateTime.Now.ToString("yyyy/MM/dd - HH:mm")</span>
-                                    </div>
-                                    <div class="order-status">
-                                        <span class="status-badge @GetOrderStatusClass(order.OrderState)">
-                                            @GetOrderStatusText(order.OrderState)
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <div class="order-items">
-                                    @foreach (var item in order.OrderDetails.Take(3))
-                                    {
-                                        <div class="order-item">
-                                            <span class="item-name">@item.ProductName</span>
-                                            <span class="item-quantity">@item.Count عدد</span>
-                                            <span class="item-price">@item.Price.ToString("N0") تومان</span>
-                                        </div>
-                                    }
-                                    @if (order.OrderDetails.Count > 3)
-                                    {
-                                        <div class="more-items">
-                                            و @(order.OrderDetails.Count - 3) محصول دیگر...
-                                        </div>
-                                    }
-                                </div>
-                                
-                                <div class="order-footer">
-                                    <div class="order-total">
-                                        <strong>جمع کل: @order.OrderDetails.Sum(od => od.Price * od.Count).ToString("N0") تومان</strong>
-                                    </div>
-                                    <div class="order-actions">
-                                        <a href="/Dashboard/OrderDetails/@order.OrderId" class="btn btn-outline-primary btn-sm">
-                                            مشاهده جزئیات
-                                        </a>
-                                        <a href="/Dashboard/DownloadInvoice?requestPayId=@order.RequestPayId" class="btn btn-outline-success btn-sm">
-                                            دانلود فاکتور
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="empty-state">
-                        <i class="mdi mdi-cart-off"></i>
-                        <h3>هنوز سفارشی ثبت نکرده‌اید</h3>
-                        <p>می‌توانید از فروشگاه ما دیدن کنید و اولین خرید خود را انجام دهید.</p>
-                        <a href="/" class="btn btn-primary">مشاهده محصولات</a>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-</div>
 
 @section Styles {
     <style>
+        .orders-container {
+            background: #f8f9fa;
+            min-height: 80vh;
+            padding: 30px 0;
+        }
+
+        .dashboard-sidebar {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            padding: 0;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .dashboard-nav {
+            padding: 15px 0;
+        }
+
+            .dashboard-nav ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .dashboard-nav .nav-item {
+                margin-bottom: 2px;
+            }
+
+            .dashboard-nav .nav-link {
+                display: flex;
+                align-items: center;
+                padding: 15px 25px;
+                color: #555;
+                text-decoration: none;
+                border-right: 3px solid transparent;
+                transition: all 0.3s ease;
+                font-weight: 500;
+            }
+
+                .dashboard-nav .nav-link:hover {
+                    background: #f8f9fa;
+                    color: #667eea;
+                    border-right-color: #667eea;
+                }
+
+            .dashboard-nav .nav-item.active .nav-link {
+                background: #f8f9fa;
+                color: #667eea;
+                border-right-color: #667eea;
+            }
+
+            .dashboard-nav .nav-link i {
+                margin-left: 12px;
+                font-size: 20px;
+                width: 24px;
+                text-align: center;
+            }
+
+        .dashboard-content {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            padding: 30px;
+            height: 100%;
+        }
+
+        .dashboard-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+            .dashboard-header h1 {
+                color: #333;
+                margin-bottom: 8px;
+                font-weight: 700;
+                font-size: 28px;
+            }
+
+            .dashboard-header p {
+                color: #666;
+                margin: 0;
+                font-size: 16px;
+            }
+
+        .user-profile-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.3);
+            margin: 0 auto 15px;
+            overflow: hidden;
+        }
+
+            .user-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .user-info h4 {
+            margin: 0 0 5px 0;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .user-info p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .orders-content {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            padding: 30px;
+        }
+
+        .orders-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+            .orders-header h1 {
+                color: #333;
+                margin-bottom: 8px;
+                font-weight: 700;
+                font-size: 28px;
+            }
+
+            .orders-header p {
+                color: #666;
+                margin: 0;
+                font-size: 16px;
+            }
+
         .order-card {
             background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
+            border: 1px solid #eef1f6;
+            border-radius: 12px;
+            padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
+
+            .order-card:hover {
+                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+                transform: translateY(-2px);
+            }
 
         .order-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            align-items: flex-start;
+            margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f1f3f4;
         }
 
         .order-info h4 {
-            margin: 0;
+            margin: 0 0 8px 0;
             color: #333;
+            font-weight: 600;
         }
 
         .order-date {
@@ -122,41 +189,48 @@
         }
 
         .status-badge {
-            padding: 6px 15px;
+            padding: 8px 20px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
         }
 
             .status-badge.processing {
-                background: #fff3cd;
-                color: #856404;
+                background: #e3f2fd;
+                color: #1976d2;
             }
 
             .status-badge.delivered {
-                background: #d4edda;
-                color: #155724;
+                background: #e8f5e8;
+                color: #2e7d32;
             }
 
             .status-badge.cancelled {
-                background: #f8d7da;
-                color: #721c24;
+                background: #ffebee;
+                color: #c62828;
             }
 
         .order-items {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .order-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            align-items: center;
+            padding: 12px 0;
             border-bottom: 1px solid #f8f9fa;
         }
+
+            .order-item:last-child {
+                border-bottom: none;
+            }
 
         .item-name {
             flex: 2;
             color: #333;
+            font-weight: 500;
         }
 
         .item-quantity, .item-price {
@@ -169,27 +243,189 @@
             text-align: center;
             color: #999;
             font-style: italic;
-            padding: 10px 0;
+            padding: 15px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
         }
 
         .order-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 15px;
-            border-top: 1px solid #f0f0f0;
+            padding-top: 20px;
+            border-top: 1px solid #f1f3f4;
         }
 
         .order-total {
             color: #333;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: 600;
         }
 
-        .order-actions .btn {
-            margin-right: 8px;
+        .order-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-outline-primary {
+            border-color: #667eea;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+            .btn-outline-primary:hover {
+                background: #667eea;
+                color: white;
+            }
+
+        .btn-outline-success {
+            border-color: #28a745;
+            color: #28a745;
+            transition: all 0.3s ease;
+        }
+
+            .btn-outline-success:hover {
+                background: #28a745;
+                color: white;
+            }
+
+        /* ریسپانسیو */
+        @@media (max-width: 768px) {
+            .orders-container {
+                padding: 15px 0;
+            }
+
+            .orders-content {
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            .order-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .order-footer {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .order-actions {
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .order-card {
+                padding: 20px;
+            }
+
+            .order-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .item-quantity, .item-price {
+                text-align: right;
+            }
+
+            .order-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
         }
     </style>
 }
+
+<div class="orders-container">
+    <div class="container-main">
+        <div class="row">
+            <!-- سایدبار -->
+            <div class="col-lg-3 col-md-4">
+                @await Html.PartialAsync("_DashboardSidebar")
+            </div>
+
+            <!-- محتوای اصلی -->
+            <div class="col-lg-9 col-md-8">
+                <div class="orders-content">
+                    <div class="orders-header">
+                        <h1>سفارشات من</h1>
+                        <p>مدیریت و پیگیری تمام سفارشات شما</p>
+                    </div>
+
+                    @if (Model?.Any() == true)
+                    {
+                        <div class="orders-list">
+                            @foreach (var order in Model)
+                            {
+                                <div class="order-card">
+                                    <div class="order-header">
+                                        <div class="order-info">
+                                            <h4>سفارش #@order.OrderId</h4>
+                                            <span class="order-date">@DateTime.Now.ToString("yyyy/MM/dd - HH:mm")</span>
+                                        </div>
+                                        <div class="order-status">
+                                            <span class="status-badge @GetOrderStatusClass(order.OrderState)">
+                                                @GetOrderStatusText(order.OrderState)
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="order-items">
+                                        @foreach (var item in order.OrderDetails.Take(3))
+                                        {
+                                            <div class="order-item">
+                                                <span class="item-name">@item.ProductName</span>
+                                                <span class="item-quantity">@item.Count عدد</span>
+                                                <span class="item-price">@item.Price.ToString("N0") تومان</span>
+                                            </div>
+                                        }
+                                        @if (order.OrderDetails.Count > 3)
+                                        {
+                                            <div class="more-items">
+                                                و @(order.OrderDetails.Count - 3) محصول دیگر...
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div class="order-footer">
+                                        <div class="order-total">
+                                            <strong>جمع کل: @order.OrderDetails.Sum(od => od.Price * od.Count).ToString("N0") تومان</strong>
+                                        </div>
+                                        <div class="order-actions">
+                                            <a href="/Dashboard/OrderDetails/@order.OrderId" class="btn btn-outline-primary btn-sm">
+                                                مشاهده جزئیات
+                                            </a>
+                                            <a href="/Dashboard/DownloadInvoice?requestPayId=@order.RequestPayId" class="btn btn-outline-success btn-sm">
+                                                دانلود فاکتور
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <i class="mdi mdi-cart-off"></i>
+                            <h3>هنوز سفارشی ثبت نکرده‌اید</h3>
+                            <p>می‌توانید از فروشگاه ما دیدن کنید و اولین خرید خود را انجام دهید.</p>
+                            <a href="/" class="btn btn-primary">مشاهده محصولات</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @{
     string GetOrderStatusClass(OrderState state)
@@ -212,4 +448,5 @@
         }
     }
 }
+
 
