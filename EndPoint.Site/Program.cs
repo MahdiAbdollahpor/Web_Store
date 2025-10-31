@@ -42,7 +42,9 @@ using Web_Store.Persistence.Contexts;
 using Web_Store.Application.Services.Users.Queries.GetUserInfoForUserPanel;
 using Web_Store.Application.Services.Orders.Queries.GetOrderDetailsService;
 using Web_Store.Application.Services.Logs.Commands;
+using Web_Store.Application.Services.Logs.Queries;
 using Web_Store.Application.Services.Logs.FacadPattern;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -106,8 +108,12 @@ builder.Services.AddScoped<IGenerateInvoicePdfService, GenerateInvoicePdfService
 builder.Services.AddScoped<IGetUserInfoForUserPanel, GetUserInfoForUserPanel>();
 builder.Services.AddScoped<IGetOrderDetailsService, GetOrderDetailsService>();
 builder.Services.AddScoped<ILogService, LogService>();
+builder.Services.AddScoped<IClearLogsService, ClearLogsService>();
 builder.Services.AddScoped<ILogFacad, LogFacad>();
+builder.Services.AddScoped<IGetLogDetailsService, GetLogDetailsService>();
+builder.Services.AddScoped<IExportLogsService, ExportLogsService>();
 builder.Services.AddHttpContextAccessor();
+
 
 
 

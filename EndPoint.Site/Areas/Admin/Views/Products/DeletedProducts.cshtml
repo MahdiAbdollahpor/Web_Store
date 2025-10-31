@@ -161,7 +161,348 @@
 </div>
 
 @section Scripts {
-    <!-- اسکریپت‌های موجود بدون تغییر -->
+    <script>
+        $(document).ready(function () {
+            // تعریف متغیرهای全局 برای آدرس‌ها به صورت مستقیم
+            const urls = {
+                restoreProduct: '/admin/products/restoreproduct',
+                restoreMultiple: '/admin/products/restoremultipleproducts',
+                permanentDelete: '/admin/products/permanentdeleteproduct',
+                productIndex: '/admin/products/index',
+                productDetail: '/admin/products/detail'
+            };
+
+            // انتخاب همه/عدم انتخاب همه
+            $('#selectAll').change(function () {
+                $('.product-checkbox').prop('checked', this.checked);
+                toggleActionButtons();
+            });
+
+            // تغییر وضعیت دکمه‌های گروهی
+            $('.product-checkbox').change(function () {
+                toggleActionButtons();
+                $('#selectAll').prop('checked',
+                    $('.product-checkbox:checked').length === $('.product-checkbox').length);
+            });
+
+            function toggleActionButtons() {
+                const checkedCount = $('.product-checkbox:checked').length;
+                $('#restoreSelected').prop('disabled', checkedCount === 0);
+                $('#permanentDeleteSelected').prop('disabled', checkedCount === 0);
+
+                if (checkedCount > 0) {
+                    $('#restoreSelected').html(`<i class="fa fa-undo"></i> بازیابی ${checkedCount} محصول`);
+                    $('#permanentDeleteSelected').html(`<i class="fa fa-trash"></i> حذف دائمی ${checkedCount} محصول`);
+                } else {
+                    $('#restoreSelected').html('<i class="fa fa-undo"></i> بازیابی محصولات انتخاب شده');
+                    $('#permanentDeleteSelected').html('<i class="fa fa-trash"></i> حذف دائمی محصولات انتخاب شده');
+                }
+            }
+
+            // بازیابی تک محصول
+            $('.restore-single').click(function () {
+                const productId = $(this).data('id');
+                const productName = $(this).data('name');
+
+                Swal.fire({
+                    title: 'آیا مطمئن هستید؟',
+                    html: `آیا از بازیابی محصول "<strong>${productName}</strong>" اطمینان دارید؟`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'بله، بازیابی شود',
+                    cancelButtonText: 'انصراف',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        restoreProduct(productId);
+                    }
+                });
+            });
+
+            // بازیابی گروهی
+            $('#restoreSelected').click(function () {
+                const selectedIds = [];
+                $('.product-checkbox:checked').each(function () {
+                    selectedIds.push($(this).val());
+                });
+
+                if (selectedIds.length > 0) {
+                    Swal.fire({
+                        title: 'آیا مطمئن هستید؟',
+                        html: `آیا از بازیابی <strong>${selectedIds.length} محصول</strong> انتخاب شده اطمینان دارید؟`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: `بله، بازیابی ${selectedIds.length} محصول`,
+                        cancelButtonText: 'انصراف',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            restoreProducts(selectedIds);
+                        }
+                    });
+                }
+            });
+
+            // حذف دائمی تک محصول
+            $('.permanent-delete').click(function () {
+                const productId = $(this).data('id');
+                const productName = $(this).data('name');
+
+                Swal.fire({
+                    title: 'هشدار!',
+                    html: `آیا از حذف دائمی محصول "<strong>${productName}</strong>" اطمینان دارید؟<br>
+                                          <small class="text-danger">این عمل غیرقابل بازگشت است و تمام اطلاعات محصول برای همیشه حذف خواهد شد.</small>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'بله، حذف دائمی شود',
+                    cancelButtonText: 'انصراف',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        permanentDeleteProduct(productId);
+                    }
+                });
+            });
+
+            // حذف دائمی گروهی
+            $('#permanentDeleteSelected').click(function () {
+                const selectedIds = [];
+                $('.product-checkbox:checked').each(function () {
+                    selectedIds.push($(this).val());
+                });
+
+                if (selectedIds.length > 0) {
+                    Swal.fire({
+                        title: 'هشدار!',
+                        html: `آیا از حذف دائمی <strong>${selectedIds.length} محصول</strong> انتخاب شده اطمینان دارید؟<br>
+                                              <small class="text-danger">این عمل غیرقابل بازگشت است و تمام اطلاعات محصولات برای همیشه حذف خواهد شد.</small>`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: `بله، حذف دائمی ${selectedIds.length} محصول`,
+                        cancelButtonText: 'انصراف',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            permanentDeleteProducts(selectedIds);
+                        }
+                    });
+                }
+            });
+
+            // تابع بازیابی تک محصول
+            function restoreProduct(productId) {
+                Swal.fire({
+                    title: 'لطفا منتظر بمانید...',
+                    text: 'در حال بازیابی محصول',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: urls.restoreProduct,
+                    type: 'POST',
+                    data: { id: productId },
+                    success: function (result) {
+                        Swal.close();
+
+                        if (result.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفق',
+                                text: result.message,
+                                confirmButtonText: 'باشه',
+                                timer: 2000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                window.location.href = urls.productIndex;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: result.message,
+                                confirmButtonText: 'متوجه شدم'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطا در ارتباط با سرور: ' + error,
+                            confirmButtonText: 'متوجه شدم'
+                        });
+                    }
+                });
+            }
+
+            // تابع بازیابی گروهی محصولات
+            function restoreProducts(productIds) {
+                Swal.fire({
+                    title: 'لطفا منتظر بمانید...',
+                    html: `در حال بازیابی ${productIds.length} محصول`,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: urls.restoreMultiple,
+                    type: 'POST',
+                    data: { productIds: productIds },
+                    traditional: true,
+                    success: function (result) {
+                        Swal.close();
+
+                        if (result.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفق',
+                                html: result.message,
+                                confirmButtonText: 'باشه',
+                                timer: 2500,
+                                timerProgressBar: true
+                            }).then(() => {
+                                window.location.href = urls.productIndex;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: result.message,
+                                confirmButtonText: 'متوجه شدم'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطا در ارتباط با سرور: ' + error,
+                            confirmButtonText: 'متوجه شدم'
+                        });
+                    }
+                });
+            }
+
+            // تابع حذف دائمی تک محصول
+            function permanentDeleteProduct(productId) {
+                Swal.fire({
+                    title: 'لطفا منتظر بمانید...',
+                    text: 'در حال حذف دائمی محصول',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: '/admin/products/permanentdeleteproduct',
+                    type: 'POST',
+                    data: { id: productId },
+                    success: function (result) {
+                        Swal.close();
+
+                        if (result.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفق',
+                                text: result.message,
+                                confirmButtonText: 'باشه',
+                                timer: 2000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: result.message,
+                                confirmButtonText: 'متوجه شدم'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطا در ارتباط با سرور: ' + error,
+                            confirmButtonText: 'متوجه شدم'
+                        });
+                    }
+                });
+            }
+
+            // تابع حذف دائمی گروهی محصولات
+            function permanentDeleteProducts(productIds) {
+                Swal.fire({
+                    title: 'لطفا منتظر بمانید...',
+                    html: `در حال حذف دائمی ${productIds.length} محصول`,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: '/admin/products/permanentdeletemultipleproducts',
+                    type: 'POST',
+                    data: { productIds: productIds },
+                    traditional: true,
+                    success: function (result) {
+                        Swal.close();
+
+                        if (result.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفق',
+                                html: result.message,
+                                confirmButtonText: 'باشه',
+                                timer: 2500,
+                                timerProgressBar: true
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: result.message,
+                                confirmButtonText: 'متوجه شدم'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطا در ارتباط با سرور: ' + error,
+                            confirmButtonText: 'متوجه شدم'
+                        });
+                    }
+                });
+            }
+
+        });
+    </script>
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         @@media (max-width: 768px) {
             .min-tablet {

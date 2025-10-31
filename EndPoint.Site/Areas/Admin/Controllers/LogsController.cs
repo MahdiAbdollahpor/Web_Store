@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web_Store.Application.Interfaces.FacadPatterns;
+using Web_Store.Application.Services.Logs.Commands;
 using Web_Store.Application.Services.Logs.FacadPattern;
 using Web_Store.Application.Services.Logs.Queries;
 
@@ -11,10 +12,12 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     public class LogsController : Controller
     {
         private readonly ILogFacad _logFacad;
+        private readonly IWebHostEnvironment _environment;
 
-        public LogsController(ILogFacad logFacad)
+        public LogsController(ILogFacad logFacad, IWebHostEnvironment environment)
         {
             _logFacad = logFacad;
+            _environment = environment;
         }
 
         public IActionResult Index(string searchKey = "", string entityName = "", string actionType = "",
@@ -96,21 +99,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             try
             {
-                var result = _logFacad.GetLogsService.Execute(new RequestGetLogsDto
-                {
-                    Page = 1,
-                    PageSize = 1
-                });
+                var result = _logFacad.GetLogDetailsService.Execute(id);
 
-                var log = result.Data?.Logs?.FirstOrDefault(l => l.Id == id);
-
-                if (log == null)
+                if (!result.IsSuccess || result.Data == null)
                 {
-                    TempData["ErrorMessage"] = "لاگ مورد نظر یافت نشد";
+                    TempData["ErrorMessage"] = result.Message ?? "لاگ مورد نظر یافت نشد";
                     return RedirectToAction("Index");
                 }
 
-                return View(log);
+                return View(result.Data);
             }
             catch (Exception ex)
             {
@@ -124,12 +121,21 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             try
             {
-                // این متد نیاز به پیاده‌سازی سرویس پاک‌سازی لاگ‌ها دارد
-                // فعلاً فقط پیام بازگشتی می‌دهیم
+                if (days <= 0 || days > 365)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "تعداد روز باید بین 1 تا 365 باشد"
+                    });
+                }
+
+                var result = _logFacad.ClearLogsService.Execute(days);
+
                 return Json(new
                 {
-                    success = true,
-                    message = $"لاگ‌های قدیمی‌تر از {days} روز با موفقیت پاک شدند"
+                    success = result.IsSuccess,
+                    message = result.Message
                 });
             }
             catch (Exception ex)
@@ -142,18 +148,71 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult Export(string format = "json")
+        [HttpPost]
+        public async Task<IActionResult> ClearLogsAsync(int days = 30)
         {
             try
             {
-                // این متد برای خروجی گرفتن از لاگ‌ها
-                // فعلاً فقط پیام بازگشتی می‌دهیم
+                if (days <= 0 || days > 365)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "تعداد روز باید بین 1 تا 365 باشد"
+                    });
+                }
+
+                var result = await _logFacad.ClearLogsService.ExecuteAsync(days);
+
                 return Json(new
                 {
-                    success = true,
-                    message = $"خروجی {format} لاگ‌ها با موفقیت ایجاد شد"
+                    success = result.IsSuccess,
+                    message = result.Message
                 });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "خطا در پاک‌سازی لاگ‌ها: " + ex.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Export([FromBody] ExportLogsRequestDto request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "درخواست نامعتبر است"
+                    });
+                }
+
+                var result = _logFacad.ExportLogsService.Execute(request);
+
+                if (result.IsSuccess)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = result.Message,
+                        data = result.Data
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = result.Message
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -163,6 +222,43 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                     message = "خطا در ایجاد خروجی: " + ex.Message
                 });
             }
+        }
+
+        [HttpGet]
+        [Route("Admin/Logs/DownloadExport/{fileName}")]
+        public IActionResult DownloadExport(string fileName)
+        {
+            try
+            {
+                var filePath = Path.Combine(_environment.WebRootPath, "exports", "logs", fileName);
+
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound("فایل مورد نظر یافت نشد");
+                }
+
+                var fileBytes = System.IO.File.ReadAllBytes(filePath);
+                var contentType = GetContentType(fileName);
+
+                return File(fileBytes, contentType, fileName);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "خطا در دانلود فایل: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        private string GetContentType(string fileName)
+        {
+            var extension = Path.GetExtension(fileName).ToLower();
+            return extension switch
+            {
+                ".json" => "application/json",
+                ".csv" => "text/csv",
+                ".xml" => "application/xml",
+                _ => "application/octet-stream"
+            };
         }
     }
 }

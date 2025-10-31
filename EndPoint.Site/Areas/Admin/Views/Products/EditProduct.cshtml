@@ -165,7 +165,135 @@
 </div>
 
 @section Scripts {
-    <!-- اسکریپت‌های موجود بدون تغییر -->
+    <script>
+        $(document).ready(function () {
+            let featureIndex = @(Model.Features?.Count ?? 0);
+
+            // نمایش نام فایل‌های انتخاب شده
+            $('.custom-file-input').on('change', function () {
+                var fileName = $(this).val().split('\\').pop();
+                if (this.files && this.files.length > 1) {
+                    fileName = this.files.length + ' فایل انتخاب شده';
+                }
+                $(this).next('.custom-file-label').html(fileName);
+            });
+
+            // افزودن ویژگی جدید
+            $('#addFeature').click(function () {
+                const featureHtml = `
+                                    <div class="feature-item row mb-2 align-items-center">
+                                        <div class="col-md-5">
+                                            <input type="text" name="Features[${featureIndex}].DisplayName"
+                                                   class="form-control" placeholder="نام ویژگی" />
+                                        </div>
+                                        <div class="col-md-5">
+                                            <input type="text" name="Features[${featureIndex}].Value"
+                                                   class="form-control" placeholder="مقدار ویژگی" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-sm btn-danger remove-feature">
+                                                <i class="fa fa-trash"></i> حذف
+                                            </button>
+                                        </div>
+                                    </div>`;
+
+                $('#featuresContainer .alert').remove();
+                $('#featuresContainer').append(featureHtml);
+                featureIndex++;
+            });
+
+            // حذف ویژگی
+            $(document).on('click', '.remove-feature', function () {
+                $(this).closest('.feature-item').remove();
+                reindexFeatures();
+            });
+
+            function reindexFeatures() {
+                $('.feature-item').each(function (index) {
+                    $(this).find('input').each(function () {
+                        const name = $(this).attr('name');
+                        if (name && name.includes('Features[')) {
+                            $(this).attr('name', name.replace(/Features\[\d+\]/, `Features[${index}]`));
+                        }
+                    });
+                });
+                featureIndex = $('.feature-item').length;
+
+                if (featureIndex === 0) {
+                    $('#featuresContainer').html('<div class="alert alert-info">هیچ ویژگی تعریف نشده است. می‌توانید ویژگی‌های جدید اضافه کنید.</div>');
+                }
+            }
+
+            // ارسال فرم با AJAX - اصلاح مهم
+            $('#editProductForm').submit(function (e) {
+                e.preventDefault();
+
+                // اعتبارسنجی
+                const name = $('#Name').val();
+                const brand = $('#Brand').val();
+                const categoryId = $('#CategoryId').val();
+                const price = $('#Price').val();
+                const inventory = $('#Inventory').val();
+
+                if (!name || !brand || !categoryId || !price || !inventory) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطا',
+                        text: 'لطفا فیلدهای الزامی (علامت دار) را پر کنید'
+                    });
+                    return;
+                }
+
+                var formData = new FormData(this);
+
+                const submitBtn = $(this).find('button[type="submit"]');
+                const originalText = submitBtn.html();
+                submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> در حال ذخیره...');
+
+                // اصلاح URL - اضافه کردن Area
+                $.ajax({
+                    url: '/Admin/Products/EditProduct', // مسیر کامل با Area
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        submitBtn.prop('disabled', false).html(originalText);
+
+                        if (result.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفق',
+                                text: result.message,
+                                confirmButtonText: 'باشه',
+                                timer: 2000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                // ریدایرکت به صفحه لیست محصولات
+                                window.location.href = '@Url.Action("", "Products", new { Area = "Admin" })';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطا',
+                                text: result.message
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        submitBtn.prop('disabled', false).html(originalText);
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'خطا در ارتباط با سرور: ' + error
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         @@media (max-width: 768px) {
             .card-body {

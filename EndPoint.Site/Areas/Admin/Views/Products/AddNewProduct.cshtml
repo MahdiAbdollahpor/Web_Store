@@ -146,7 +146,117 @@
 
 @section Scripts
 {
-    <!-- اسکریپت‌های موجود بدون تغییر -->
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+
+
+    <script>
+
+        $("#btnAddFeatures").on("click", function () {
+
+            var txtDisplayName = $("#txtDisplayName").val();
+            var txtValue = $("#txtValue").val();
+
+            if (txtDisplayName == "" || txtValue == "") {
+                swal.fire(
+                    'هشدار!',
+                    "نام و مقدار را باید وارد کنید",
+                    'warning'
+                );
+            }
+            else {
+                $('#tbl_Features tbody').append('<tr> <td>' + txtDisplayName + '</td>  <td>' + txtValue + '</td> <td> <a class="idFeatures btnDelete btn btn-danger"> حذف </a> </td> </tr>');
+                $("#txtDisplayName").val('');
+                $("#txtValue").val('');
+            }
+        });
+
+        $("#tbl_Features").on('click', '.idFeatures', function () {
+            $(this).closest('tr').remove();
+        });
+
+
+
+        $('#btnAddProduct').on('click', function () {
+
+            var data = new FormData();
+
+            //دریافت مقادیر از تکس باکس ها و....
+            data.append("Name", $("#Name").val());
+            data.append("Brand", $("#Brand").val());
+            data.append("Price", $("#Price").val());
+            data.append("Inventory", $("#Inventory").val());
+            data.append("Displayed", $("#Displayed").attr("checked") ? true : false);
+            data.append("CategoryId", $('#Category').find('option:selected').val());
+            data.append("Description", $("#Description").val());
+
+
+            //دریافت عکس های انتخاب شده توسط کاربر و قرار دادن عکس ها در متغیر data
+            var productImages = document.getElementById("Images");
+
+            if (productImages.files.length > 0) {
+                for (var i = 0; i < productImages.files.length; i++) {
+                    data.append('Images-' + i, productImages.files[i]);
+                }
+            }
+
+            //دریافت ویژگی های محصول از جدول
+            var dataFeaturesViewModel = $('#tbl_Features tr:gt(0)').map(function () {
+                return {
+                    DisplayName: $(this.cells[0]).text(),
+                    Value: $(this.cells[1]).text(),
+                };
+            }).get();
+
+            $.each(dataFeaturesViewModel, function (i, val) {
+                data.append('[' + i + '].DisplayName', val.DisplayName);
+                data.append('[' + i + '].Value', val.Value);
+
+            });
+
+
+
+
+
+            // ارسال اطلاعات بع کنترلر
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: "AddNewProduct",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (data) {
+
+                    if (data.isSuccess == true) {
+                        swal.fire(
+                            'موفق!',
+                            data.message,
+                            'success'
+                        ).then(function (isConfirm) {
+                            window.location.href = "/Admin/Products/";
+                        });
+                    }
+                    else {
+                        swal.fire(
+                            'هشدار!',
+                            data.message,
+                            'warning'
+                        );
+                    }
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert(xhr.status);
+                    alert(thrownError);
+                }
+
+            });
+
+            ajaxRequest.done(function (xhr, textStatus) {
+                // Do other operation
+            });
+        });
+    </script>
     <style>
         @@media (max-width: 768px) {
             .card-body {
