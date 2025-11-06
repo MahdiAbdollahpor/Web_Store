@@ -52,7 +52,7 @@ namespace Web_Store.Application.Services.Fainances.Commands.ZarinPalService
 
             var result = JsonConvert.DeserializeObject<ZarinPalRequestResponse>(responseString);
 
-            if (result.data?.code != 100)
+            if (result!.data?.code != 100)
             {
                 throw new Exception($"ZarinPal error: {result.data?.message}");
             }
@@ -85,46 +85,46 @@ namespace Web_Store.Application.Services.Fainances.Commands.ZarinPalService
                 throw new Exception($"ZarinPal verify failed: {responseString}");
             }
 
-            return JsonConvert.DeserializeObject<ZarinPalVerifyResponse>(responseString);
+            return JsonConvert.DeserializeObject<ZarinPalVerifyResponse>(responseString)!;
         }
     }
 
     // مدل‌های داده
     public class ZarinPalRequest
     {
-        public string MerchantId { get; set; }
+        public string? MerchantId { get; set; }
         public int Amount { get; set; }
-        public string CallbackUrl { get; set; }
-        public string Description { get; set; }
-        public string Mobile { get; set; }
-        public string Email { get; set; }
+        public string? CallbackUrl { get; set; }
+        public string? Description { get; set; }
+        public string? Mobile { get; set; }
+        public string? Email { get; set; }
     }
 
     public class ZarinPalRequestResponse
     {
-        public Data data { get; set; }
-        public object errors { get; set; }
+        public Data? data { get; set; }
+        public object? errors { get; set; }
     }
 
     public class ZarinPalVerifyRequest
     {
-        public string MerchantId { get; set; }
+        public string? MerchantId { get; set; }
         public int Amount { get; set; }
-        public string Authority { get; set; }
+        public string? Authority { get; set; }
     }
 
     public class ZarinPalVerifyResponse
     {
-        public Data data { get; set; }
-        public object errors { get; set; }
+        public Data? data { get; set; }
+        public object? errors { get; set; }
     }
 
     public class Data
     {
         public int code { get; set; }
-        public string message { get; set; }
-        public string authority { get; set; }
-        public string fee_type { get; set; }
+        public string? message { get; set; }
+        public string? authority { get; set; }
+        public string? fee_type { get; set; }
         public int fee { get; set; }
         public long ref_id { get; set; }
     }

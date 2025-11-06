@@ -379,7 +379,7 @@
                                     </div>
 
                                     <div class="order-items">
-                                        @foreach (var item in order.OrderDetails.Take(3))
+                                        @foreach (var item in order.OrderDetails!.Take(3))
                                         {
                                             <div class="order-item">
                                                 <span class="item-name">@item.ProductName</span>
@@ -387,7 +387,7 @@
                                                 <span class="item-price">@item.Price.ToString("N0") تومان</span>
                                             </div>
                                         }
-                                        @if (order.OrderDetails.Count > 3)
+                                        @if (order.OrderDetails!.Count > 3)
                                         {
                                             <div class="more-items">
                                                 و @(order.OrderDetails.Count - 3) محصول دیگر...

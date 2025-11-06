@@ -32,7 +32,7 @@ namespace Web_Store.Application.Services.Common.Queries.GetMenuItem
                 {
                     CatId = p.Id,
                     Name = p.Name,
-                    Child = p.SubCategories.ToList().Select(child => new MenuItemDto
+                    Child = p.SubCategories!.ToList().Select(child => new MenuItemDto
                     {
                         CatId = child.Id,
                         Name = child.Name,
@@ -50,7 +50,7 @@ namespace Web_Store.Application.Services.Common.Queries.GetMenuItem
     public class MenuItemDto
     {
         public long CatId { get; set; }
-        public string Name { get; set; }
-        public List<MenuItemDto> Child { get; set; }
+        public string? Name { get; set; }
+        public List<MenuItemDto>? Child { get; set; }
     }
 }

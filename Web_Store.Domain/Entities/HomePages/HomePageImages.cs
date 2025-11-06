@@ -9,8 +9,8 @@ namespace Web_Store.Domain.Entities.HomePages
 {
     public class HomePageImages : BaseEntity
     {
-        public string Src { get; set; }
-        public string link { get; set; }
+        public string? Src { get; set; }
+        public string? link { get; set; }
         public ImageLocation ImageLocation { get; set; }
     }
 

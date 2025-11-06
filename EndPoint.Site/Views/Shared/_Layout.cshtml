@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فروشگاه اینترنتی کالا مارکت</title>
+
+    <meta name="keywords" content="فروشگاه اینترنتی, خرید آنلاین, دیجی اسمارت, موبایل, لپ تاپ, لوازم خانگی, الکترونیک">
+    <meta name="description" content="فروشگاه اینترنتی دیجی اسمارت - خرید آنلاین انواع موبایل، لپ تاپ، لوازم خانگی و الکترونیک با بهترین قیمت">
+
     <!-- font---------------------------------------->
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/font-awesome.min.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/materialdesignicons.css">
@@ -47,7 +51,7 @@
                             <div class="header-account text-left">
                                 <div class="d-block">
                                     <div class="account-box">
-                                        @if (User.Identity.IsAuthenticated)
+                                        @if (User.Identity!.IsAuthenticated)
                                         {
                                             <div class="nav-account d-block pl">
                                                 <span class="icon-account">

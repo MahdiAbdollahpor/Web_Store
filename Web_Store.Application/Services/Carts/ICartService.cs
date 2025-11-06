@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Web_Store.Application.Interfaces.Contexts;
+﻿using Microsoft.EntityFrameworkCore;
 using Web_store.Common.Dto;
+using Web_Store.Application.Interfaces.Contexts;
 using Web_Store.Domain.Entities.Carts;
-using Microsoft.EntityFrameworkCore;
 
 namespace Web_Store.Application.Services.Carts
 {
@@ -30,7 +25,7 @@ namespace Web_Store.Application.Services.Carts
 
         public ResultDto Add(long CartItemId)
         {
-            var cartItem = _context.CartItems.Find(CartItemId);
+            var cartItem = _context.CartItems.Find(CartItemId)!;
             cartItem.Count++;
             _context.SaveChanges();
             return new ResultDto()
@@ -68,7 +63,7 @@ namespace Web_Store.Application.Services.Carts
                 {
                     Cart = cart,
                     Count = 1,
-                    Price = product.Price,
+                    Price = product!.Price,
                     Product = product,
 
                 };
@@ -79,7 +74,7 @@ namespace Web_Store.Application.Services.Carts
             return new ResultDto()
             {
                 IsSuccess = true,
-                Message = $"محصول  {product.Name} با موفقیت به سبد خرید شما اضافه شد ",
+                Message = $"محصول  {product!.Name} با موفقیت به سبد خرید شما اضافه شد ",
             };
         }
 
@@ -88,9 +83,9 @@ namespace Web_Store.Application.Services.Carts
             try
             {
                 var cart = _context.Carts
-                    .Include(p => p.CartItems)
+                    .Include(p => p.CartItems!)
                     .ThenInclude(p => p.Product)
-                    .ThenInclude(p => p.ProductImages)
+                    .ThenInclude(p => p!.ProductImages)
                     .Where(p => p.BrowserId == BrowserId && p.Finished == false)
                     .OrderByDescending(p => p.Id)
                     .FirstOrDefault();
@@ -110,7 +105,7 @@ namespace Web_Store.Application.Services.Carts
                 if (UserId != null)
                 {
                     var user = _context.Users.Find(UserId);
-                    cart.User = user;
+                    cart.User = user!;
                     _context.SaveChanges();
                 }
 
@@ -118,14 +113,14 @@ namespace Web_Store.Application.Services.Carts
                 {
                     Data = new CartDto()
                     {
-                        ProductCount = cart.CartItems.Count(),
-                        SumAmount = cart.CartItems.Sum(p => p.Price * p.Count),
+                        ProductCount = cart.CartItems!.Count(),
+                        SumAmount = cart.CartItems!.Sum(p => p.Price * p.Count),
                         CartId = cart.Id,
-                        CartItems = cart.CartItems.Select(p => new CartItemDto
+                        CartItems = cart.CartItems!.Select(p => new CartItemDto
                         {
                             Count = p.Count,
                             Price = p.Price,
-                            Product = p.Product.Name,
+                            Product = p.Product!.Name,
                             Id = p.Id,
                             Images = p.Product?.ProductImages?.FirstOrDefault()?.Src ?? "",
                         }).ToList(),
@@ -133,7 +128,7 @@ namespace Web_Store.Application.Services.Carts
                     IsSuccess = true,
                 };
             }
-            catch (Exception ex)
+            catch (Exception )
             {
 
                 throw;
@@ -145,7 +140,7 @@ namespace Web_Store.Application.Services.Carts
         {
             var cartItem = _context.CartItems.Find(CartItemId);
 
-            if (cartItem.Count <= 1)
+            if (cartItem!.Count <= 1)
             {
                 return new ResultDto()
                 {
@@ -162,7 +157,7 @@ namespace Web_Store.Application.Services.Carts
 
         public ResultDto RemoveFromCart(long ProductId, Guid BrowserId)
         {
-            var cartitem = _context.CartItems.Where(p => p.Cart.BrowserId == BrowserId).FirstOrDefault();
+            var cartitem = _context.CartItems.Where(p => p.Cart!.BrowserId == BrowserId).FirstOrDefault();
             if (cartitem != null)
             {
                 cartitem.IsRemoved = true;
@@ -192,13 +187,13 @@ namespace Web_Store.Application.Services.Carts
         public long CartId { get; set; }
         public int ProductCount { get; set; }
         public int SumAmount { get; set; }
-        public List<CartItemDto> CartItems { get; set; }
+        public List<CartItemDto>? CartItems { get; set; }
     }
     public class CartItemDto
     {
         public long Id { get; set; }
-        public string Product { get; set; }
-        public string Images { get; set; }
+        public string? Product { get; set; }
+        public string? Images { get; set; }
         public int Count { get; set; }
         public int Price { get; set; }
     }

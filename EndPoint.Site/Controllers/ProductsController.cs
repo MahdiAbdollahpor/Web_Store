@@ -1,27 +1,45 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Drawing.Printing;
-using Web_Store.Application.Interfaces.FacadPatterns;
 using Web_Store.Application.Services.Products.Queries.GetProductForSite;
+using Web_Store.Application.Services.Products.Queries.GetProductDetailForSite;
 
 namespace EndPoint.Site.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly IProductFacad _productFacad;
+        private readonly IGetProductForSiteService _getProductForSiteService;
+        private readonly IGetProductDetailForSiteService _getProductDetailForSiteService;
 
-        public ProductsController(IProductFacad productFacad)
+        public ProductsController(
+            IGetProductForSiteService getProductForSiteService,
+            IGetProductDetailForSiteService getProductDetailForSiteService)
         {
-            _productFacad = productFacad;
+            _getProductForSiteService = getProductForSiteService;
+            _getProductDetailForSiteService = getProductDetailForSiteService;
         }
+
         public IActionResult Index(Ordering ordering, string Searchkey, long? CatId = null, int page = 1, int pageSize = 20)
         {
-            return View(_productFacad.GetProductForSiteService.Execute(ordering, Searchkey, page, pageSize, CatId).Data);
+            var result = _getProductForSiteService.Execute(ordering, Searchkey, page, pageSize, CatId);
+            if (!result.IsSuccess)
+            {
+                // در صورت خطا، می‌توانید یک صفحه خالی یا پیام خطا نمایش دهید
+                return View(new ResultProductForSiteDto
+                {
+                    Products = new List<ProductForSiteDto>(),
+                    TotalRow = 0
+                });
+            }
+            return View(result.Data);
         }
-
 
         public IActionResult Detail(long Id)
         {
-            return View(_productFacad.GetProductDetailForSiteService.Execute(Id).Data);
+            var result = _getProductDetailForSiteService.Execute(Id);
+            if (!result.IsSuccess || result.Data == null)
+            {
+                return NotFound();
+            }
+            return View(result.Data);
         }
     }
 }

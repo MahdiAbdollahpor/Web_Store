@@ -61,9 +61,9 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
                 };
 
                 // آپدیت اطلاعات پایه محصول
-                product.Name = request.Name;
-                product.Brand = request.Brand;
-                product.Description = request.Description;
+                product.Name = request.Name!;
+                product.Brand = request.Brand!;
+                product.Description = request.Description!;
                 product.Price = request.Price;
                 product.Inventory = request.Inventory;
                 product.Displayed = request.Displayed;
@@ -71,7 +71,7 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
                 product.UpdateTime = DateTime.Now;
 
                 // آپدیت ویژگی‌ها
-                UpdateFeatures(product, request.Features);
+                UpdateFeatures(product, request.Features!);
 
                 // آپدیت تصاویر فقط اگر جدیدی آپلود شده باشد
                 if (request.Images != null && request.Images.Count > 0 && request.Images.Any(x => x.Length > 0))
@@ -136,7 +136,7 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
                 {
                     if (!string.IsNullOrWhiteSpace(feature.DisplayName) && !string.IsNullOrWhiteSpace(feature.Value))
                     {
-                        product.ProductFeatures.Add(new ProductFeatures
+                        product.ProductFeatures!.Add(new ProductFeatures
                         {
                             DisplayName = feature.DisplayName,
                             Value = feature.Value,
@@ -159,7 +159,7 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
             // حذف فایل‌های فیزیکی
             foreach (var image in existingImages)
             {
-                var oldImagePath = Path.Combine(_environment.WebRootPath, image.Src.TrimStart('\\', '/'));
+                var oldImagePath = Path.Combine(_environment.WebRootPath, image.Src!.TrimStart('\\', '/'));
                 if (File.Exists(oldImagePath))
                 {
                     try
@@ -192,7 +192,7 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
                     image.CopyTo(fileStream);
                 }
 
-                product.ProductImages.Add(new ProductImages
+                product.ProductImages!.Add(new ProductImages
                 {
                     Src = Path.Combine("Images", "Products", uniqueFileName).Replace("\\", "/"),
                     ProductId = product.Id
@@ -206,12 +206,12 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
         public long Id { get; set; }
 
         [Required(ErrorMessage = "نام محصول الزامی است")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Required(ErrorMessage = "برند محصول الزامی است")]
-        public string Brand { get; set; }
+        public string? Brand { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required(ErrorMessage = "قیمت محصول الزامی است")]
         [Range(1, int.MaxValue, ErrorMessage = "قیمت باید بیشتر از 0 باشد")]
@@ -226,14 +226,14 @@ namespace Web_Store.Application.Services.Products.Commands.EditProduct
         [Required(ErrorMessage = "دسته‌بندی الزامی است")]
         public long CategoryId { get; set; }
 
-        public List<IFormFile> Images { get; set; }
-        public List<EditProduct_Features> Features { get; set; }
+        public List<IFormFile>? Images { get; set; }
+        public List<EditProduct_Features>? Features { get; set; }
     }
 
     public class EditProduct_Features
     {
         public long Id { get; set; }
-        public string DisplayName { get; set; }
-        public string Value { get; set; }
+        public string? DisplayName { get; set; }
+        public string? Value { get; set; }
     }
 }

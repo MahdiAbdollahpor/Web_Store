@@ -41,9 +41,9 @@ namespace Web_Store.Application.Services.Users.Commands.UserLogin
 
 
             var user = _context.Users
-                .Include(p => p.UserInRoles)
+                .Include(p => p.UserInRoles!)
                 .ThenInclude(p => p.Role)
-                .Where(p => p.Email.Equals(Username)
+                .Where(p => p.Email!.Equals(Username)
             && p.IsActive == true)
             .FirstOrDefault();
 
@@ -61,7 +61,7 @@ namespace Web_Store.Application.Services.Users.Commands.UserLogin
             }
 
             var passwordHasher = new PasswordHasher();
-            bool resultVerifyPassword = passwordHasher.VerifyPassword(user.Password, Password);
+            bool resultVerifyPassword = passwordHasher.VerifyPassword(user.Password!, Password);
             if (resultVerifyPassword == false)
             {
                 return new ResultDto<ResultUserloginDto>()
@@ -77,9 +77,9 @@ namespace Web_Store.Application.Services.Users.Commands.UserLogin
 
 
             List<string> roles = new List<string>();
-            foreach (var item in user.UserInRoles)
+            foreach (var item in user.UserInRoles!)
             {
-                roles.Add(item.Role.Name);
+                roles.Add(item.Role!.Name!);
             }
 
 
@@ -102,7 +102,7 @@ namespace Web_Store.Application.Services.Users.Commands.UserLogin
     public class ResultUserloginDto
     {
         public long UserId { get; set; }
-        public List<string> Roles { get; set; }
-        public string Name { get; set; }
+        public List<string>? Roles { get; set; }
+        public string? Name { get; set; }
     }
 }

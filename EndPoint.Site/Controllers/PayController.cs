@@ -36,9 +36,9 @@ public class PayController : Controller
         long? UserId = ClaimUtility.GetUserId(User);
         var cart = _cartService.GetMyCart(_cookiesManeger.GetBrowserId(HttpContext), UserId);
 
-        if (cart.Data.SumAmount > 1000) // حداقل amount
+        if (cart.Data!.SumAmount > 1000) // حداقل amount
         {
-            var requestPay = _addRequestPayService.Execute(cart.Data.SumAmount, UserId.Value);
+            var requestPay = _addRequestPayService.Execute(cart.Data.SumAmount, UserId!.Value);
 
             try
             {
@@ -46,14 +46,14 @@ public class PayController : Controller
                 {
                     MerchantId = "6c729f63-9724-4349-9e69-786f9aee2658",
                     Amount = cart.Data.SumAmount,
-                    CallbackUrl = $"https://localhost:44328/Pay/Verify?guid={requestPay.Data.guid}",
+                    CallbackUrl = $"https://localhost:44328/Pay/Verify?guid={requestPay.Data!.guid}",
                     Description = "پرداخت فاکتور شماره:" + requestPay.Data.RequestPayId,
                     Email = requestPay.Data.Email,
                     Mobile = "09121112222"
                 };
 
                 var result = await _zarinPalService.RequestPayment(request);
-                return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{result.data.authority}");
+                return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{result.data!.authority}");
             }
             catch (Exception ex)
             {
@@ -76,13 +76,13 @@ public class PayController : Controller
             var verifyRequest = new ZarinPalVerifyRequest
             {
                 MerchantId = "6c729f63-9724-4349-9e69-786f9aee2658",
-                Amount = requestPay.Data.Amount,
+                Amount = requestPay.Data!.Amount,
                 Authority = authority
             };
 
             var result = await _zarinPalService.VerifyPayment(verifyRequest);
 
-            if (result.data.code == 100)
+            if (result.data!.code == 100)
             {
                 // پرداخت موفق
                 long? UserId = ClaimUtility.GetUserId(User);
@@ -90,8 +90,8 @@ public class PayController : Controller
 
                 _addNewOrderService.Execute(new RequestAddNewOrderSericeDto
                 {
-                    CartId = cart.Data.CartId,
-                    UserId = UserId.Value,
+                    CartId = cart.Data!.CartId,
+                    UserId = UserId!.Value,
                     RequestPayId = requestPay.Data.Id
                 });
 

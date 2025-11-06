@@ -368,7 +368,7 @@
                             <img src="~/SiteTemplate/assets/images/man.png" alt="پروفایل کاربر">
                         </div>
                         <div class="user-info">
-                            <h4>@Model.UserInfo.fullName</h4>
+                            <h4>@Model.UserInfo!.fullName</h4>
                             <p>@Model.UserInfo.Email</p>
                         </div>
                     </div>
@@ -481,7 +481,7 @@
                                                             @GetOrderStatusText(order.OrderState)
                                                         </span>
                                                     </td>
-                                                    <td>@order.OrderDetails.Sum(od => od.Price * od.Count).ToString("N0") تومان</td>
+                                                    <td>@order.OrderDetails!.Sum(od => od.Price * od.Count).ToString("N0") تومان</td>
                                                     <td>
                                                         <a href="/Dashboard/OrderDetails/@order.OrderId" class="btn btn-sm btn-outline-primary">
                                                             مشاهده

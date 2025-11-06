@@ -131,7 +131,7 @@ namespace Web_Store.Application.Services.Users.Commands.RgegisterUser
                 List<UserInRole> userInRoles = new List<UserInRole>();
                 var roleNames = new List<string>();
 
-                foreach (var item in request.roles)
+                foreach (var item in request.roles!)
                 {
                     var roles = _context.Roles.Find(item.Id);
                     if (roles == null)
@@ -154,7 +154,7 @@ namespace Web_Store.Application.Services.Users.Commands.RgegisterUser
                         UserId = user.Id,
                     });
 
-                    roleNames.Add(roles.Name);
+                    roleNames.Add(roles.Name!);
                 }
 
                 user.UserInRoles = userInRoles;
@@ -175,7 +175,7 @@ namespace Web_Store.Application.Services.Users.Commands.RgegisterUser
                     "User",
                     user.Id,
                     $"کاربر جدید {request.FullName} ثبت شد",
-                    null,
+                    "",
                     JsonSerializer.Serialize(userData, new JsonSerializerOptions { WriteIndented = true })
                 );
 
@@ -208,11 +208,11 @@ namespace Web_Store.Application.Services.Users.Commands.RgegisterUser
 
     public class RequestRegisterUserDto
     {
-        public string FullName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string RePasword { get; set; }
-        public List<RolesInRegisterUserDto> roles { get; set; }
+        public string? FullName { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
+        public string? RePasword { get; set; }
+        public List<RolesInRegisterUserDto>? roles { get; set; }
     }
 
     public class RolesInRegisterUserDto

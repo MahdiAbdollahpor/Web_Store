@@ -36,7 +36,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetCategories
                        name = p.ParentCategory.Name,
                    }
                    : null,
-                   HasChild = p.SubCategories.Count() > 0 ? true : false,
+                   HasChild = p.SubCategories!.Count() > 0 ? true : false,
                }).ToList();
 
 

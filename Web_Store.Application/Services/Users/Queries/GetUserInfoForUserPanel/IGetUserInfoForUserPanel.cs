@@ -29,7 +29,7 @@ namespace Web_Store.Application.Services.Users.Queries.GetUserInfoForUserPanel
 
             return new UserInfoDtoForDashbord
             {
-                id = userInfo.Id,
+                id = userInfo!.Id,
                 fullName = userInfo.FullName,
                 Email = userInfo.Email
 
@@ -40,7 +40,7 @@ namespace Web_Store.Application.Services.Users.Queries.GetUserInfoForUserPanel
     public class UserInfoDtoForDashbord
     {
         public long id { get; set; }
-        public string fullName { get; set; }
-        public string Email { get; set; }
+        public string? fullName { get; set; }
+        public string? Email { get; set; }
     }
 }

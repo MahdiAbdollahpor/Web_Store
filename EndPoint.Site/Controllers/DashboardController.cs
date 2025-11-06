@@ -41,7 +41,7 @@ namespace EndPoint.Site.Controllers
             var model = new DashboardViewModel
             {
                 UserInfo = userInfo,
-                Orders = userOrders.Data?.Take(5).ToList() // نمایش 5 سفارش آخر
+                Orders = userOrders.Data?.Take(5).ToList()! // نمایش 5 سفارش آخر
             };
 
             return View(model);
@@ -87,7 +87,7 @@ namespace EndPoint.Site.Controllers
 
             // بررسی اینکه این فاکتور متعلق به کاربر جاری است
             var userId = GetCurrentUserId();
-            if (result.Data.UserId != userId)
+            if (result.Data!.UserId != userId)
             {
                 TempData["ErrorMessage"] = "دسترسی غیر مجاز";
                 return RedirectToAction("Orders");
@@ -108,13 +108,13 @@ namespace EndPoint.Site.Controllers
 
             // بررسی مالکیت فاکتور
             var requestPayDetail = _getRequestPayDetail.Execute(requestPayId);
-            if (requestPayDetail.IsSuccess && requestPayDetail.Data.UserId != GetCurrentUserId())
+            if (requestPayDetail.IsSuccess && requestPayDetail.Data!.UserId != GetCurrentUserId())
             {
                 TempData["ErrorMessage"] = "دسترسی غیر مجاز";
                 return RedirectToAction("Orders");
             }
 
-            return File(result.Data, "application/pdf", $"Invoice_{requestPayId}.pdf");
+            return File(result.Data!, "application/pdf", $"Invoice_{requestPayId}.pdf");
         }
 
         public IActionResult Profile()
@@ -137,7 +137,7 @@ namespace EndPoint.Site.Controllers
 
     public class DashboardViewModel
     {
-        public UserInfoDtoForDashbord UserInfo { get; set; }
-        public List<GetUserOrdersDto> Orders { get; set; }
+        public UserInfoDtoForDashbord? UserInfo { get; set; }
+        public List<GetUserOrdersDto>? Orders { get; set; }
     }
 }

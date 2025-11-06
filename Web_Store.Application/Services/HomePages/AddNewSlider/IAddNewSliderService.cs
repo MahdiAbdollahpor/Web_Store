@@ -19,15 +19,18 @@ namespace Web_Store.Application.Services.HomePages.AddNewSlider
 
     public class AddNewSliderService : IAddNewSliderService
     {
-
+        [Obsolete]
         private readonly IHostingEnvironment _environment;
         private readonly IDataBaseContext _context;
 
+        [Obsolete]
         public AddNewSliderService(IHostingEnvironment environment, IDataBaseContext context)
         {
             _environment = environment;
             _context = context;
         }
+
+        [Obsolete]
         public ResultDto Execute(IFormFile file, string Link)
         {
             var resultUpload = UploadFile(file);
@@ -36,7 +39,7 @@ namespace Web_Store.Application.Services.HomePages.AddNewSlider
             Slider slider = new Slider()
             {
                 link = Link,
-                Src = resultUpload.FileNameAddress,
+                Src = resultUpload!.FileNameAddress,
             };
             _context.Sliders.Add(slider);
             _context.SaveChanges();
@@ -47,7 +50,9 @@ namespace Web_Store.Application.Services.HomePages.AddNewSlider
             };
 
         }
-        private UploadDto UploadFile(IFormFile file)
+
+        [Obsolete]
+        private UploadDto? UploadFile(IFormFile file)
         {
             if (file != null)
             {

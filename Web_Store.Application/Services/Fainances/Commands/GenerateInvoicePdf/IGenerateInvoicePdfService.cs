@@ -51,10 +51,10 @@ namespace Web_Store.Application.Services.Fainances.Commands.GenerateInvoicePdf
                     var smallFont = new Font(baseFont, 10, Font.NORMAL, BaseColor.GRAY);
 
                     // اضافه کردن محتوا با متن‌های معکوس شده
-                    AddInvoiceHeader(document, invoiceData, titleFont, normalFont);
-                    AddCustomerInfo(document, invoiceData, headerFont, normalFont);
-                    AddProductsTable(document, invoiceData, headerFont, normalFont, smallFont);
-                    AddPaymentSummary(document, invoiceData, headerFont, normalFont);
+                    AddInvoiceHeader(document, invoiceData!, titleFont, normalFont);
+                    AddCustomerInfo(document, invoiceData!, headerFont, normalFont);
+                    AddProductsTable(document, invoiceData!, headerFont, normalFont, smallFont);
+                    AddPaymentSummary(document, invoiceData!, headerFont, normalFont);
 
                     document.Close();
 
@@ -165,8 +165,8 @@ namespace Web_Store.Application.Services.Fainances.Commands.GenerateInvoicePdf
             customerTable.WidthPercentage = 100;
             customerTable.SetWidths(new float[] { 1, 2 });
 
-            AddInfoRow(customerTable, ReversePersianText("نام کامل:"), invoiceData.UserName, normalFont);
-            AddInfoRow(customerTable, ReversePersianText("ایمیل:"), invoiceData.UserEmail, normalFont);
+            AddInfoRow(customerTable, ReversePersianText("نام کامل:"), invoiceData.UserName!, normalFont);
+            AddInfoRow(customerTable, ReversePersianText("ایمیل:"), invoiceData.UserEmail!, normalFont);
             AddInfoRow(customerTable, ReversePersianText("کد کاربر:"), invoiceData.UserId.ToString(), normalFont);
 
             document.Add(customerTable);
@@ -198,7 +198,7 @@ namespace Web_Store.Application.Services.Fainances.Commands.GenerateInvoicePdf
             productsTitle.SpacingAfter = 10f;
             document.Add(productsTitle);
 
-            foreach (var order in invoiceData.Orders)
+            foreach (var order in invoiceData.Orders!)
             {
                 var orderHeader = new Paragraph(
                     ReversePersianText($"سفارش شماره: {order.OrderId} - وضعیت: {order.OrderState}"),
@@ -219,9 +219,9 @@ namespace Web_Store.Application.Services.Fainances.Commands.GenerateInvoicePdf
                 AddTableHeader(productsTable, ReversePersianText("جمع"), headerFont);
 
                 // ردیف‌های محصولات
-                foreach (var item in order.OrderItems)
+                foreach (var item in order.OrderItems!)
                 {
-                    AddTableRow(productsTable, ReversePersianText(item.ProductName), smallFont);
+                    AddTableRow(productsTable, ReversePersianText(item.ProductName!), smallFont);
                     AddTableRow(productsTable, item.Price.ToString("N0"), smallFont);
                     AddTableRow(productsTable, item.Count.ToString(), smallFont);
                     AddTableRow(productsTable, item.TotalPrice.ToString("N0"), smallFont);
@@ -302,7 +302,7 @@ namespace Web_Store.Application.Services.Fainances.Commands.GenerateInvoicePdf
             {
                 AddSummaryRow(summaryTable,
                     ReversePersianText("تاریخ پرداخت:"),
-                    invoiceData.PayDate?.ToString("yyyy/MM/dd HH:mm"),
+                    invoiceData.PayDate?.ToString("yyyy/MM/dd HH:mm")!,
                     normalFont
                 );
                 AddSummaryRow(summaryTable,

@@ -44,7 +44,7 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewCategory
 
         private Category GetParent(long? ParentId)
         {
-            return _context.Categories.Find(ParentId);
+            return _context.Categories.Find(ParentId)!;
         }
     }
 }

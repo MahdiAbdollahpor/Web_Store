@@ -1,80 +1,120 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Web_store.Common.Dto;
-using Web_Store.Application.Interfaces.FacadPatterns;
 using Web_Store.Application.Services.Products.Commands.AddNewProduct;
+using Web_Store.Application.Services.Products.Commands.DeleteProduct;
 using Web_Store.Application.Services.Products.Commands.EditProduct;
+using Web_Store.Application.Services.Products.Commands.PermanentDeleteMultipleProducts;
+using Web_Store.Application.Services.Products.Commands.PermanentDeleteProduct;
+using Web_Store.Application.Services.Products.Commands.RestoreProduct;
+using Web_Store.Application.Services.Products.Queries.GetAllCategories;
+using Web_Store.Application.Services.Products.Queries.GetDeletedProducts;
 using Web_Store.Application.Services.Products.Queries.GetProductDetailForAdmin;
 using Web_Store.Application.Services.Products.Queries.GetProductForAdmin;
-using static Web_Store.Application.Services.Products.Commands.EditProduct.EditProductService;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ProductsController : Controller
     {
+        private readonly IGetProductForAdminService _getProductForAdminService;
+        private readonly IGetProductDetailForAdminService _getProductDetailForAdminService;
+        private readonly IGetAllCategoriesService _getAllCategoriesService;
+        private readonly IAddNewProductService _addNewProductService;
+        private readonly IEditProductService _editProductService;
+        private readonly IDeleteProductService _deleteProductService;
+        private readonly IGetDeletedProductsService _getDeletedProductsService;
+        private readonly IRestoreProductService _restoreProductService;
+        private readonly IPermanentDeleteProductService _permanentDeleteProductService;
+        private readonly IPermanentDeleteMultipleProductsService _permanentDeleteMultipleProductsService;
 
-        private readonly IProductFacad _productFacad;
-
-        public ProductsController(IProductFacad productFacad)
+        public ProductsController(
+            IGetProductForAdminService getProductForAdminService,
+            IGetProductDetailForAdminService getProductDetailForAdminService,
+            IGetAllCategoriesService getAllCategoriesService,
+            IAddNewProductService addNewProductService,
+            IEditProductService editProductService,
+            IDeleteProductService deleteProductService,
+            IGetDeletedProductsService getDeletedProductsService,
+            IRestoreProductService restoreProductService,
+            IPermanentDeleteProductService permanentDeleteProductService,
+            IPermanentDeleteMultipleProductsService permanentDeleteMultipleProductsService)
         {
-            _productFacad = productFacad;
+            _getProductForAdminService = getProductForAdminService;
+            _getProductDetailForAdminService = getProductDetailForAdminService;
+            _getAllCategoriesService = getAllCategoriesService;
+            _addNewProductService = addNewProductService;
+            _editProductService = editProductService;
+            _deleteProductService = deleteProductService;
+            _getDeletedProductsService = getDeletedProductsService;
+            _restoreProductService = restoreProductService;
+            _permanentDeleteProductService = permanentDeleteProductService;
+            _permanentDeleteMultipleProductsService = permanentDeleteMultipleProductsService;
         }
+
         public IActionResult Index(int Page = 1, int PageSize = 20)
         {
-            return View(_productFacad.GetProductForAdminService.Execute(Page, PageSize).Data);
+            var result = _getProductForAdminService.Execute(Page, PageSize);
+            if (!result.IsSuccess)
+            {
+                TempData["ErrorMessage"] = result.Message;
+            }
+            return View(result.Data ?? new ProductForAdminDto());
         }
 
         public IActionResult Detail(long Id)
         {
-            return View(_productFacad.GetProductDetailForAdminService.Execute(Id).Data);
+            var result = _getProductDetailForAdminService.Execute(Id);
+            if (!result.IsSuccess || result.Data == null)
+            {
+                return NotFound();
+            }
+            return View(result.Data);
         }
 
         [HttpGet]
         public IActionResult AddNewProduct()
         {
-            ViewBag.Categories = new SelectList(_productFacad.GetAllCategoriesService.Execute().Data, "Id", "Name");
+            var categoriesResult = _getAllCategoriesService.Execute();
+            ViewBag.Categories = new SelectList(categoriesResult.Data ?? new List<AllCategoriesDto>(), "Id", "Name");
             return View();
         }
 
         [HttpPost]
         public IActionResult AddNewProduct(RequestAddNewProductDto request, List<AddNewProduct_Features> Features)
         {
-            List<IFormFile> images = new List<IFormFile>();
-            for (int i = 0; i < Request.Form.Files.Count; i++)
-            {
-                var file = Request.Form.Files[i];
-                images.Add(file);
-            }
+            var images = Request.Form.Files?.Where(f => f.Length > 0).ToList() ?? new List<IFormFile>();
             request.Images = images;
             request.Features = Features;
-            return Json(_productFacad.AddNewProductService.Execute(request));
+
+            var result = _addNewProductService.Execute(request);
+            return Json(result);
         }
 
         [HttpGet]
         public IActionResult EditProduct(long id)
         {
-            var productDetail = _productFacad.GetProductDetailForAdminService.Execute(id).Data;
-            if (productDetail == null)
+            var productResult = _getProductDetailForAdminService.Execute(id);
+            if (!productResult.IsSuccess || productResult.Data == null)
             {
                 return NotFound();
             }
 
-            ViewBag.Categories = new SelectList(_productFacad.GetAllCategoriesService.Execute().Data, "Id", "Name");
-            ViewBag.CurrentImages = productDetail.Images;
+            var categoriesResult = _getAllCategoriesService.Execute();
+            ViewBag.Categories = new SelectList(categoriesResult.Data ?? new List<AllCategoriesDto>(), "Id", "Name");
+            ViewBag.CurrentImages = productResult.Data.Images;
 
             var editModel = new RequestEditProductDto
             {
-                Id = productDetail.Id,
-                Name = productDetail.Name,
-                Brand = productDetail.Brand,
-                Description = productDetail.Description,
-                Price = productDetail.Price,
-                Inventory = productDetail.Inventory,
-                Displayed = productDetail.Displayed,
-                CategoryId = GetCategoryIdFromName(productDetail.Category),
-                Features = productDetail.Features?.Select(f => new EditProduct_Features
+                Id = productResult.Data.Id,
+                Name = productResult.Data.Name,
+                Brand = productResult.Data.Brand,
+                Description = productResult.Data.Description,
+                Price = productResult.Data.Price,
+                Inventory = productResult.Data.Inventory,
+                Displayed = productResult.Data.Displayed,
+                CategoryId = GetCategoryIdFromName(productResult.Data.Category!),
+                Features = productResult.Data.Features?.Select(f => new EditProduct_Features
                 {
                     Id = f.Id,
                     DisplayName = f.DisplayName,
@@ -88,40 +128,17 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult EditProduct(RequestEditProductDto request, List<EditProduct_Features> Features)
         {
-            try
-            {
-                // دریافت فایل‌ها - با بررسی null
-                List<IFormFile> images = new List<IFormFile>();
-                if (Request.Form.Files != null && Request.Form.Files.Count > 0)
-                {
-                    for (int i = 0; i < Request.Form.Files.Count; i++)
-                    {
-                        var file = Request.Form.Files[i];
-                        if (file != null && file.Length > 0)
-                        {
-                            images.Add(file);
-                        }
-                    }
-                }
-                request.Images = images;
-                request.Features = Features;
+            var images = Request.Form.Files?.Where(f => f.Length > 0).ToList() ?? new List<IFormFile>();
+            request.Images = images;
+            request.Features = Features;
 
-                var result = _productFacad.EditProductService.Execute(request);
-                return Json(new
-                {
-                    IsSuccess = result.IsSuccess,
-                    Message = result.Message,
-                    RedirectUrl = result.IsSuccess ? "/Admin/Products/Index" : ""
-                });
-            }
-            catch (Exception ex)
+            var result = _editProductService.Execute(request);
+            return Json(new
             {
-                return Json(new
-                {
-                    IsSuccess = false,
-                    Message = "خطا در ویرایش محصول: " + ex.Message
-                });
-            }
+                IsSuccess = result.IsSuccess,
+                Message = result.Message,
+                RedirectUrl = result.IsSuccess ? Url.Action("Index", "Products", new { area = "Admin" }) : ""
+            });
         }
 
         private long GetCategoryIdFromName(string categoryName)
@@ -129,95 +146,57 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             if (string.IsNullOrEmpty(categoryName))
                 return 0;
 
-            var categories = _productFacad.GetAllCategoriesService.Execute().Data;
-            var category = categories.FirstOrDefault(c => categoryName.Contains(c.Name));
-            return category?.Id ?? categories.FirstOrDefault()?.Id ?? 0;
+            var categoriesResult = _getAllCategoriesService.Execute();
+            var categories = categoriesResult.Data ?? new List<AllCategoriesDto>();
+            var category = categories.FirstOrDefault(c => categoryName.Contains(c.Name ?? ""));
+            return category?.Id ?? 0;
         }
-
 
         [HttpPost]
         public IActionResult DeleteProduct(long id)
         {
-            try
-            {
-                var result = _productFacad.DeleteProductService.Execute(id);
-                return Json(result);
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    IsSuccess = false,
-                    Message = "خطا در حذف محصول: " + ex.Message
-                });
-            }
+            var result = _deleteProductService.Execute(id);
+            return Json(result);
         }
 
         [HttpPost]
         public IActionResult DeleteMultipleProducts(List<long> productIds)
         {
-            try
+            if (productIds == null || !productIds.Any())
             {
-                if (productIds == null || !productIds.Any())
-                {
-                    return Json(new
-                    {
-                        IsSuccess = false,
-                        Message = "هیچ محصولی برای حذف انتخاب نشده است"
-                    });
-                }
-
-                var results = new List<ResultDto>();
-                foreach (var productId in productIds)
-                {
-                    var result = _productFacad.DeleteProductService.Execute(productId);
-                    results.Add(result);
-                }
-
-                var successCount = results.Count(r => r.IsSuccess);
-                var failedCount = results.Count(r => !r.IsSuccess);
-
-                string message;
-                if (failedCount == 0)
-                {
-                    message = $"{successCount} محصول با موفقیت حذف شد.";
-                }
-                else if (successCount == 0)
-                {
-                    message = "هیچ محصولی حذف نشد. لطفاً دوباره تلاش کنید.";
-                }
-                else
-                {
-                    message = $"{successCount} محصول حذف شد، {failedCount} محصول حذف نشد.";
-                }
-
-                return Json(new
-                {
-                    IsSuccess = successCount > 0,
-                    Message = message
-                });
+                return Json(new ResultDto { IsSuccess = false, Message = "هیچ محصولی انتخاب نشده است." });
             }
-            catch (Exception ex)
+
+            var successCount = 0;
+            foreach (var id in productIds)
             {
-                return Json(new
-                {
-                    IsSuccess = false,
-                    Message = "خطا در حذف محصولات: " + ex.Message
-                });
+                var result = _deleteProductService.Execute(id);
+                if (result.IsSuccess) successCount++;
             }
+
+            string message;
+            if (successCount == productIds.Count)
+                message = $"{successCount} محصول با موفقیت حذف شدند.";
+            else if (successCount == 0)
+                message = "هیچ محصولی حذف نشد.";
+            else
+                message = $"{successCount} از {productIds.Count} محصول حذف شدند.";
+
+            return Json(new ResultDto
+            {
+                IsSuccess = successCount > 0,
+                Message = message
+            });
         }
-
-       
 
         [HttpGet]
         public IActionResult DeletedProducts(int Page = 1, int PageSize = 20)
         {
-            var result = _productFacad.GetDeletedProductsService.Execute(Page, PageSize);
-
+            var result = _getDeletedProductsService.Execute(Page, PageSize);
             if (!result.IsSuccess)
             {
                 TempData["ErrorMessage"] = result.Message;
-                return View(new ProductForAdminDto()
+                return View(new ProductForAdminDto
                 {
                     Products = new List<ProductsFormAdminList_Dto>(),
                     CurrentPage = Page,
@@ -225,119 +204,63 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                     RowCount = 0
                 });
             }
-
             return View(result.Data);
         }
 
         [HttpPost]
         public IActionResult RestoreProduct(long id)
         {
-            try
-            {
-                var result = _productFacad.RestoreProductService.Execute(id);
-                return Json(result);
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    IsSuccess = false,
-                    Message = "خطا در بازیابی محصول: " + ex.Message
-                });
-            }
+            var result = _restoreProductService.Execute(id);
+            return Json(result);
         }
 
         [HttpPost]
         public IActionResult RestoreMultipleProducts(List<long> productIds)
         {
-            try
+            if (productIds == null || !productIds.Any())
             {
-                if (productIds == null || !productIds.Any())
-                {
-                    return Json(new
-                    {
-                        IsSuccess = false,
-                        Message = "هیچ محصولی برای بازیابی انتخاب نشده است"
-                    });
-                }
-
-                var results = new List<ResultDto>();
-                foreach (var productId in productIds)
-                {
-                    var result = _productFacad.RestoreProductService.Execute(productId);
-                    results.Add(result);
-                }
-
-                var successCount = results.Count(r => r.IsSuccess);
-                var failedCount = results.Count(r => !r.IsSuccess);
-
-                string message;
-                if (failedCount == 0)
-                {
-                    message = $"{successCount} محصول با موفقیت بازیابی شد.";
-                }
-                else if (successCount == 0)
-                {
-                    message = "هیچ محصولی بازیابی نشد. لطفاً دوباره تلاش کنید.";
-                }
-                else
-                {
-                    message = $"{successCount} محصول بازیابی شد، {failedCount} محصول بازیابی نشد.";
-                }
-
-                return Json(new
-                {
-                    IsSuccess = successCount > 0,
-                    Message = message
-                });
+                return Json(new ResultDto { IsSuccess = false, Message = "هیچ محصولی برای بازیابی انتخاب نشده است." });
             }
-            catch (Exception ex)
+
+            var successCount = 0;
+            foreach (var id in productIds)
             {
-                return Json(new
-                {
-                    IsSuccess = false,
-                    Message = "خطا در بازیابی محصولات: " + ex.Message
-                });
+                var result = _restoreProductService.Execute(id);
+                if (result.IsSuccess) successCount++;
             }
+
+            string message;
+            if (successCount == productIds.Count)
+                message = $"{successCount} محصول با موفقیت بازیابی شدند.";
+            else if (successCount == 0)
+                message = "هیچ محصولی بازیابی نشد.";
+            else
+                message = $"{successCount} از {productIds.Count} محصول بازیابی شدند.";
+
+            return Json(new ResultDto
+            {
+                IsSuccess = successCount > 0,
+                Message = message
+            });
         }
 
-        
         [HttpPost]
         public IActionResult PermanentDeleteProduct(long id)
         {
-            try
-            {
-                var result = _productFacad.PermanentDeleteProductService.Execute(id);
-                return Json(result);
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    IsSuccess = false,
-                    Message = "خطا در حذف کامل محصول: " + ex.Message
-                });
-            }
+            var result = _permanentDeleteProductService.Execute(id);
+            return Json(result);
         }
 
-        
         [HttpPost]
         public IActionResult PermanentDeleteMultipleProducts(long[] productIds)
         {
-            try
+            if (productIds == null || productIds.Length == 0)
             {
-                var result = _productFacad.PermanentDeleteMultipleProductsService.Execute(productIds);
-                return Json(result);
+                return Json(new ResultDto { IsSuccess = false, Message = "هیچ محصولی برای حذف دائمی انتخاب نشده است." });
             }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    IsSuccess = false,
-                    Message = "خطا در حذف کامل محصولات: " + ex.Message
-                });
-            }
+
+            var result = _permanentDeleteMultipleProductsService.Execute(productIds);
+            return Json(result);
         }
     }
 }
-

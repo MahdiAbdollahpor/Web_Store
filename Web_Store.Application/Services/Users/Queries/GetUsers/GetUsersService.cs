@@ -23,7 +23,7 @@ namespace Web_Store.Application.Services.Users.Queries.GetUsers
 
             if (!string.IsNullOrWhiteSpace(request.SearchKey))
             {
-                users = users.Where(p => p.FullName.Contains(request.SearchKey) || p.Email.Contains(request.SearchKey));
+                users = users.Where(p => p.FullName!.Contains(request.SearchKey) || p.Email!.Contains(request.SearchKey));
             }
 
             int rowsCount = users.Count();

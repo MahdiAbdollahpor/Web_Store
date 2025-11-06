@@ -39,7 +39,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetDeletedProducts
                     {
                         Id = p.Id,
                         Name = p.Name,
-                        Category = p.Category.Name,
+                        Category = p.Category!.Name,
                         Brand = p.Brand,
                         Description = p.Description,
                         Price = p.Price,

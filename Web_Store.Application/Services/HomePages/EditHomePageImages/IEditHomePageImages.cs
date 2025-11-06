@@ -15,14 +15,17 @@ namespace Web_Store.Application.Services.HomePages.EditHomePageImages
     public class EditHomePageImages : IEditHomePageImages
     {
         private readonly IDataBaseContext _context;
+        [Obsolete]
         private readonly IHostingEnvironment _environment;
 
+        [Obsolete]
         public EditHomePageImages(IDataBaseContext context, IHostingEnvironment hosting)
         {
             _context = context;
             _environment = hosting;
         }
 
+        [Obsolete]
         public ResultDto Execute(requestEditHomePageImagesDto request)
         {
             var image = _context.HomePageImages.Find(request.Id);
@@ -49,10 +52,10 @@ namespace Web_Store.Application.Services.HomePages.EditHomePageImages
 
                 // آپلود فایل جدید
                 var resultUpload = UploadFile(request.file);
-                image.Src = resultUpload.FileNameAddress;
+                image.Src = resultUpload!.FileNameAddress;
             }
 
-            image.link = request.Link;
+            image.link = request.Link!;
             image.ImageLocation = request.ImageLocation;
 
             _context.SaveChanges();
@@ -63,9 +66,8 @@ namespace Web_Store.Application.Services.HomePages.EditHomePageImages
             };
         }
 
-
-
-        private UploadDto UploadFile(IFormFile file)
+        [Obsolete]
+        private UploadDto? UploadFile(IFormFile file)
         {
             if (file != null)
             {
@@ -109,8 +111,8 @@ namespace Web_Store.Application.Services.HomePages.EditHomePageImages
     public class requestEditHomePageImagesDto
     {
         public long Id { get; set; }
-        public IFormFile file { get; set; }
-        public string Link { get; set; }
+        public IFormFile? file { get; set; }
+        public string? Link { get; set; }
         public ImageLocation ImageLocation { get; set; }
     }
 

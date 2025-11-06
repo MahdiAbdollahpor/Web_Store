@@ -15,7 +15,7 @@ namespace EndPoint.Site.Controllers
         }
         public IActionResult Index()
         {
-            long userId = ClaimUtility.GetUserId(User).Value;
+            long userId = ClaimUtility.GetUserId(User)!.Value;
             return View(_getUserOrdersService.Execute(userId).Data);
         }
     }

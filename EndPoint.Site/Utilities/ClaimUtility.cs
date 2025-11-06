@@ -24,7 +24,7 @@ namespace EndPoint.Site.Utilities
             }
         }
 
-        public static string GetUserEmail(ClaimsPrincipal User)
+        public static string? GetUserEmail(ClaimsPrincipal User)
         {
             try
             {

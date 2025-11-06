@@ -41,7 +41,7 @@ namespace EndPoint.Site.Controllers
                 return Json(new ResultDto { IsSuccess = false, Message = "لطفا تمامی موارد رو ارسال نمایید" });
             }
 
-            if (User.Identity.IsAuthenticated == true)
+            if (User.Identity!.IsAuthenticated == true)
             {
                 return Json(new ResultDto { IsSuccess = false, Message = "شما به حساب کاربری خود وارد شده اید! و در حال حاضر نمیتوانید ثبت نام مجدد نمایید" });
             }
@@ -79,7 +79,7 @@ namespace EndPoint.Site.Controllers
             {
                 var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.NameIdentifier,signeupResult.Data.UserId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier,signeupResult.Data !.UserId.ToString()),
                 new Claim(ClaimTypes.Email, request.Email),
                 new Claim(ClaimTypes.Name, request.FullName),
                 new Claim(ClaimTypes.Role, "Customer"),
@@ -113,12 +113,12 @@ namespace EndPoint.Site.Controllers
             {
                 var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.NameIdentifier,signupResult.Data.UserId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier,signupResult.Data !.UserId.ToString()),
                 new Claim(ClaimTypes.Email, Email),
-                new Claim(ClaimTypes.Name, signupResult.Data.Name),
+                new Claim(ClaimTypes.Name, signupResult.Data.Name!),
 
             };
-                foreach (var item in signupResult.Data.Roles)
+                foreach (var item in signupResult.Data.Roles!)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, item));
                 }
@@ -137,12 +137,14 @@ namespace EndPoint.Site.Controllers
         }
 
 
-        public IActionResult SignOut()
+        public new IActionResult SignOut
         {
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            get
+            {
+                HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home");
+            }
         }
-
     }
 }

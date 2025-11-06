@@ -12,15 +12,17 @@ namespace Web_Store.Application.Services.HomePages.DeleteHomePageImages
     public class DeleteHomePageImages : IDeleteHomePageImages
     {
         private readonly IDataBaseContext _context;
+        [Obsolete]
         private readonly IHostingEnvironment _environment;
 
+        [Obsolete]
         public DeleteHomePageImages(IDataBaseContext context, IHostingEnvironment environment)
         {
             _context = context;
             _environment = environment;
         }
 
-
+        [Obsolete]
         public ResultDto Execute(long id)
         {
             var image = _context.HomePageImages.Find(id);

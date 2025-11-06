@@ -54,7 +54,7 @@ namespace Web_Store.Application.Services.Orders.Queries.IGetUserServiceForAdmin
     public class UserOrderDto
     {
         public long UserId { get; set; }
-        public string FullName { get; set; }
-        public string Email { get; set; }
+        public string? FullName { get; set; }
+        public string? Email { get; set; }
     }
 }

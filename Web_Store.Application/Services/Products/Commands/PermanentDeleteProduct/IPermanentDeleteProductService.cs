@@ -86,7 +86,7 @@ namespace Web_Store.Application.Services.Products.Commands.PermanentDeleteProduc
                 foreach (var image in product.ProductImages)
                 {
                     // حذف فایل فیزیکی از سرور
-                    var imagePath = Path.Combine(_environment.WebRootPath, image.Src.TrimStart('\\', '/'));
+                    var imagePath = Path.Combine(_environment.WebRootPath, image.Src!.TrimStart('\\', '/'));
                     if (File.Exists(imagePath))
                     {
                         try

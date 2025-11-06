@@ -18,18 +18,21 @@ namespace Web_Store.Application.Services.Sliders
 
     public class SliderService : ISliderService
     {
+        [Obsolete]
         private readonly IHostingEnvironment _environment;
         private readonly IDataBaseContext _context;
 
+        [Obsolete]
         public SliderService(IHostingEnvironment environment, IDataBaseContext context)
         {
             _environment = environment;
             _context = context;
         }
 
+        [Obsolete]
         public ResultDto AddSlider(RequestAddSliderDto request)
         {
-            var resultUpload = UploadFile(request.File);
+            var resultUpload = UploadFile(request.File!);
 
             if (resultUpload == null || !resultUpload.Status)
             {
@@ -42,8 +45,8 @@ namespace Web_Store.Application.Services.Sliders
 
             Slider slider = new Slider()
             {
-                link = request.Link,
-                Src = resultUpload.FileNameAddress,
+                link = request.Link!,
+                Src = resultUpload.FileNameAddress!,
             };
             _context.Sliders.Add(slider);
             _context.SaveChanges();
@@ -55,6 +58,7 @@ namespace Web_Store.Application.Services.Sliders
             };
         }
 
+        [Obsolete]
         public ResultDto EditSlider(RequestEditSliderDto request)
         {
             var slider = _context.Sliders.Find(request.Id);
@@ -83,11 +87,11 @@ namespace Web_Store.Application.Services.Sliders
                 var resultUpload = UploadFile(request.File);
                 if (resultUpload != null && resultUpload.Status)
                 {
-                    slider.Src = resultUpload.FileNameAddress;
+                    slider.Src = resultUpload.FileNameAddress!;
                 }
             }
 
-            slider.link = request.Link;
+            slider.link = request.Link!;
             _context.SaveChanges();
 
             return new ResultDto()
@@ -97,6 +101,7 @@ namespace Web_Store.Application.Services.Sliders
             };
         }
 
+        [Obsolete]
         public ResultDto DeleteSlider(long id)
         {
             var slider = _context.Sliders.Find(id);
@@ -169,7 +174,8 @@ namespace Web_Store.Application.Services.Sliders
             };
         }
 
-        private UploadDto UploadFile(IFormFile file)
+        [Obsolete]
+        private UploadDto? UploadFile(IFormFile file)
         {
             if (file != null && file.Length > 0)
             {
@@ -200,21 +206,21 @@ namespace Web_Store.Application.Services.Sliders
     public class SliderDto
     {
         public long Id { get; set; }
-        public string Src { get; set; }
-        public string Link { get; set; }
+        public string? Src { get; set; }
+        public string? Link { get; set; }
         public DateTime InsertTime { get; set; }
     }
 
     public class RequestAddSliderDto
     {
-        public IFormFile File { get; set; }
-        public string Link { get; set; }
+        public IFormFile? File { get; set; }
+        public string? Link { get; set; }
     }
 
     public class RequestEditSliderDto
     {
         public long Id { get; set; }
-        public IFormFile File { get; set; }
-        public string Link { get; set; }
+        public IFormFile? File { get; set; }
+        public string? Link { get; set; }
     }
 }

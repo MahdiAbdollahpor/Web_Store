@@ -30,7 +30,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductDetailForAdm
             var product = _context.Products
                  .Where(p => !p.IsRemoved)
                 .Include(p => p.Category)
-                .ThenInclude(p => p.ParentCategory)
+                .ThenInclude(p => p!.ParentCategory)
                 .Include(p => p.ProductFeatures)
                 .Include(p => p.ProductImages)
                 .Where(p => p.Id == Id)
@@ -39,21 +39,21 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductDetailForAdm
             {
                 Data = new ProductDetailForAdmindto()
                 {
-                    Brand = product.Brand,
-                    Category = GetCategory(product.Category),
+                    Brand = product!.Brand,
+                    Category = GetCategory(product.Category!),
                     Description = product.Description,
                     Displayed = product.Displayed,
                     Id = product.Id,
                     Inventory = product.Inventory,
                     Name = product.Name,
                     Price = product.Price,
-                    Features = product.ProductFeatures.ToList().Select(p => new ProductDetailFeatureDto
+                    Features = product.ProductFeatures!.ToList().Select(p => new ProductDetailFeatureDto
                     {
                         Id = p.Id,
                         DisplayName = p.DisplayName,
                         Value = p.Value
                     }).ToList(),
-                    Images = product.ProductImages.ToList().Select(p => new ProductDetailImagesDto
+                    Images = product.ProductImages!.ToList().Select(p => new ProductDetailImagesDto
                     {
                         Id = p.Id,
                         Src = p.Src,
@@ -74,28 +74,28 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductDetailForAdm
     public class ProductDetailForAdmindto
     {
         public long Id { get; set; }
-        public string Name { get; set; }
-        public string Category { get; set; }
-        public string Brand { get; set; }
-        public string Description { get; set; }
+        public string? Name { get; set; }
+        public string? Category { get; set; }
+        public string? Brand { get; set; }
+        public string? Description { get; set; }
         public int Price { get; set; }
         public int Inventory { get; set; }
         public bool Displayed { get; set; }
-        public List<ProductDetailFeatureDto> Features { get; set; }
-        public List<ProductDetailImagesDto> Images { get; set; }
+        public List<ProductDetailFeatureDto>? Features { get; set; }
+        public List<ProductDetailImagesDto>? Images { get; set; }
     }
 
 
     public class ProductDetailImagesDto
     {
         public long Id { get; set; }
-        public string Src { get; set; }
+        public string? Src { get; set; }
     }
 
     public class ProductDetailFeatureDto
     {
         public long Id { get; set; }
-        public string DisplayName { get; set; }
-        public string Value { get; set; }
+        public string? DisplayName { get; set; }
+        public string? Value { get; set; }
     }
 }

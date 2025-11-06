@@ -42,8 +42,11 @@ namespace Web_store.Common
             {
                 if (staticProperty.PropertyType == typeof(System.Resources.ResourceManager))
                 {
-                    System.Resources.ResourceManager resourceManager = (System.Resources.ResourceManager)staticProperty.GetValue(null, null);
-                    return resourceManager.GetString(resourceKey);
+                    var resourceManagerValue = staticProperty.GetValue(null, null);
+                    if (resourceManagerValue is System.Resources.ResourceManager resourceManager)
+                    {
+                        return resourceManager.GetString(resourceKey) ?? resourceKey;
+                    }
                 }
             }
 
@@ -54,23 +57,31 @@ namespace Web_store.Common
         {
             try
             {
-                var fieldInfo = value.GetType().GetField(value.ToString());
+                if (value == null) return "نا مشخص";
+
+                string? valueString = value.ToString();
+                if (string.IsNullOrEmpty(valueString)) return "نا مشخص";
+
+                var fieldInfo = value.GetType().GetField(valueString);
+                if (fieldInfo == null) return valueString;
 
                 var descriptionAttributes = fieldInfo.GetCustomAttributes(
                     typeof(DisplayAttribute), false) as DisplayAttribute[];
 
-                if (descriptionAttributes[0].ResourceType != null)
-                    return lookupResource(descriptionAttributes[0].ResourceType, descriptionAttributes[0].Name);
+                if (descriptionAttributes == null || descriptionAttributes.Length == 0)
+                    return valueString;
 
-                if (descriptionAttributes == null) return string.Empty;
-                return (descriptionAttributes.Length > 0) ? descriptionAttributes[0].Name : value.ToString();
+                var displayAttribute = descriptionAttributes[0];
+
+                if (displayAttribute?.ResourceType != null && !string.IsNullOrEmpty(displayAttribute.Name))
+                    return lookupResource(displayAttribute.ResourceType, displayAttribute.Name);
+
+                return displayAttribute?.Name ?? valueString;
             }
             catch (Exception)
             {
-
                 return "نا مشخص";
             }
-
         }
     }
 }

@@ -39,8 +39,8 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductForSite
                 if (!string.IsNullOrWhiteSpace(SearchKey))
                 {
                     productQuery = productQuery.Where(p =>
-                        p.Name.Contains(SearchKey) ||
-                        p.Brand.Contains(SearchKey)
+                        p.Name!.Contains(SearchKey) ||
+                        p.Brand!.Contains(SearchKey)
                     ).AsQueryable();
                 }
 
@@ -88,7 +88,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductForSite
                     IsSuccess = true,
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // لاگ کردن خطا
                 return new ResultDto<ResultProductForSiteDto>

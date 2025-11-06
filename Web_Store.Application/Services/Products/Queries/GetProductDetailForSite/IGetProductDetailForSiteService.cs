@@ -26,7 +26,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductDetailForSit
             var Product = _context.Products
                 .Where(p => p.Id == Id && !p.IsRemoved && p.Displayed)
                 .Include(p => p.Category)
-                .ThenInclude(p => p.ParentCategory)
+                .ThenInclude(p => p!.ParentCategory)
                 .Include(p => p.ProductImages)
                 .Include(p => p.ProductFeatures)
                 .Where(p => p.Id == Id).FirstOrDefault();
@@ -44,13 +44,13 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductDetailForSit
                 Data = new ProductDetailForSiteDto
                 {
                     Brand = Product.Brand,
-                    Category = $"{Product.Category.ParentCategory.Name}  - {Product.Category.Name}",
+                    Category = $"{Product.Category!.ParentCategory!.Name}  - {Product.Category.Name}",
                     Description = Product.Description,
                     Id = Product.Id,
                     Price = Product.Price,
                     Title = Product.Name,
-                    Images = Product.ProductImages.Select(p => p.Src).ToList(),
-                    Features = Product.ProductFeatures.Select(p => new ProductDetailForSite_FeaturesDto
+                    Images = Product.ProductImages!.Select(p => p.Src).ToList()!,
+                    Features = Product.ProductFeatures!.Select(p => new ProductDetailForSite_FeaturesDto
                     {
                         DisplayName = p.DisplayName,
                         Value = p.Value,
@@ -66,19 +66,19 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductDetailForSit
     public class ProductDetailForSiteDto
     {
         public long Id { get; set; }
-        public string Title { get; set; }
-        public string Brand { get; set; }
-        public string Category { get; set; }
-        public string Description { get; set; }
+        public string? Title { get; set; }
+        public string? Brand { get; set; }
+        public string? Category { get; set; }
+        public string? Description { get; set; }
         public int Price { get; set; }
-        public List<string> Images { get; set; }
-        public List<ProductDetailForSite_FeaturesDto> Features { get; set; }
+        public List<string>? Images { get; set; }
+        public List<ProductDetailForSite_FeaturesDto>? Features { get; set; }
     }
 
     public class ProductDetailForSite_FeaturesDto
     {
-        public string DisplayName { get; set; }
-        public string Value { get; set; }
+        public string? DisplayName { get; set; }
+        public string? Value { get; set; }
     }
 
 

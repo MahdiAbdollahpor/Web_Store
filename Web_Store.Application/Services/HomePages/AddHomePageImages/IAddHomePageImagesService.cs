@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Web_store.Common.Dto;
 using Web_Store.Application.Interfaces.Contexts;
 using Web_Store.Application.Services.Products.Commands.AddNewProduct;
-using Web_store.Common.Dto;
 using Web_Store.Domain.Entities.HomePages;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Web_Store.Application.Services.HomePages.AddHomePageImages
 {
@@ -21,22 +16,26 @@ namespace Web_Store.Application.Services.HomePages.AddHomePageImages
     public class AddHomePageImagesService : IAddHomePageImagesService
     {
         private readonly IDataBaseContext _context;
+        [Obsolete]
         private readonly IHostingEnvironment _environment;
 
+        [Obsolete]
         public AddHomePageImagesService(IDataBaseContext context, IHostingEnvironment hosting)
         {
             _context = context;
             _environment = hosting;
         }
+
+        [Obsolete]
         public ResultDto Execute(requestAddHomePageImagesDto request)
         {
 
-            var resultUpload = UploadFile(request.file);
+            var resultUpload = UploadFile(request.file!);
 
             HomePageImages homePageImages = new HomePageImages()
             {
-                link = request.Link,
-                Src = resultUpload.FileNameAddress,
+                link = request.Link!,
+                Src = resultUpload!.FileNameAddress,
                 ImageLocation = request.ImageLocation,
             };
             _context.HomePageImages.Add(homePageImages);
@@ -47,10 +46,8 @@ namespace Web_Store.Application.Services.HomePages.AddHomePageImages
             };
         }
 
-
-
-
-        private UploadDto UploadFile(IFormFile file)
+        [Obsolete]
+        private UploadDto? UploadFile(IFormFile file)
         {
             if (file != null)
             {
@@ -90,8 +87,8 @@ namespace Web_Store.Application.Services.HomePages.AddHomePageImages
 
     public class requestAddHomePageImagesDto
     {
-        public IFormFile file { get; set; }
-        public string Link { get; set; }
+        public IFormFile? file { get; set; }
+        public string? Link { get; set; }
         public ImageLocation ImageLocation { get; set; }
     }
 }

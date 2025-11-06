@@ -57,7 +57,7 @@ namespace Web_Store.Application.Services.Users.Commands.RemoveUser
                     user.Id,
                     $"کاربر {user.Email} حذف شد",
                     JsonSerializer.Serialize(userData, new JsonSerializerOptions { WriteIndented = true }),
-                    null
+                    ""
                 );
 
                 return new ResultDto()

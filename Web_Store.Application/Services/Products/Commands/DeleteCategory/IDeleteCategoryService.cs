@@ -32,7 +32,7 @@ namespace Web_Store.Application.Services.Products.Commands.DeleteCategory
             if (category == null)
                 return new ResultDto { IsSuccess = false, Message = "دسته‌بندی یافت نشد." };
 
-            if (category.SubCategories.Any())
+            if (category.SubCategories!.Any())
                 return new ResultDto { IsSuccess = false, Message = "ابتدا زیرمجموعه‌های این دسته را حذف کنید." };
 
             // اگر محصولی به این دسته متصل است، نمی‌توان حذف کرد (بسته به نیاز شما)

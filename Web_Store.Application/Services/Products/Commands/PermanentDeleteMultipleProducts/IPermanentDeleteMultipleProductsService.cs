@@ -125,7 +125,7 @@ namespace Web_Store.Application.Services.Products.Commands.PermanentDeleteMultip
             {
                 foreach (var image in product.ProductImages)
                 {
-                    var imagePath = Path.Combine(_environment.WebRootPath, image.Src.TrimStart('\\', '/'));
+                    var imagePath = Path.Combine(_environment.WebRootPath, image.Src!.TrimStart('\\', '/'));
                     if (File.Exists(imagePath))
                     {
                         try

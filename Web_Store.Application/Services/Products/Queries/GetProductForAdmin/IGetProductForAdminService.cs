@@ -34,7 +34,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductForAdmin
                 {
                     Id = p.Id,
                     Brand = p.Brand,
-                    Category = p.Category.Name,
+                    Category = p.Category!.Name,
                     Description = p.Description,
                     Displayed = p.Displayed,
                     Inventory = p.Inventory,
@@ -63,16 +63,16 @@ namespace Web_Store.Application.Services.Products.Queries.GetProductForAdmin
         public int CurrentPage { get; set; }
         public int PageSize { get; set; }
 
-        public List<ProductsFormAdminList_Dto> Products { get; set; }
+        public List<ProductsFormAdminList_Dto>? Products { get; set; }
     }
 
     public class ProductsFormAdminList_Dto
     {
         public long Id { get; set; }
-        public string Name { get; set; }
-        public string Category { get; set; }
-        public string Brand { get; set; }
-        public string Description { get; set; }
+        public string? Name { get; set; }
+        public string? Category { get; set; }
+        public string? Brand { get; set; }
+        public string? Description { get; set; }
         public int Price { get; set; }
         public int Inventory { get; set; }
         public bool Displayed { get; set; }

@@ -34,7 +34,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetAllCategories
                 .Select(p => new AllCategoriesDto
                 {
                     Id = p.Id,
-                    Name = $"{p.ParentCategory.Name} - {p.Name}",
+                    Name = $"{p.ParentCategory!.Name} - {p.Name}",
                 }
                 ).ToList();
 
@@ -50,7 +50,7 @@ namespace Web_Store.Application.Services.Products.Queries.GetAllCategories
     public class AllCategoriesDto
     {
         public long Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
     }
 
 }

@@ -51,9 +51,9 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
                 // ایجاد محصول جدید
                 Product product = new Product()
                 {
-                    Brand = request.Brand,
-                    Description = request.Description,
-                    Name = request.Name,
+                    Brand = request.Brand!,
+                    Description = request.Description!,
+                    Name = request.Name!,
                     Price = request.Price,
                     Inventory = request.Inventory,
                     Category = category,
@@ -63,7 +63,7 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
 
                 // آپلود و ذخیره تصاویر
                 List<ProductImages> productImages = new List<ProductImages>();
-                foreach (var item in request.Images)
+                foreach (var item in request.Images!)
                 {
                     var uploadedResult = UploadFile(item);
                     if (uploadedResult.Status)
@@ -71,7 +71,7 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
                         productImages.Add(new ProductImages
                         {
                             Product = product,
-                            Src = uploadedResult.FileNameAddress,
+                            Src = uploadedResult.FileNameAddress!,
                         });
                     }
                 }
@@ -83,12 +83,12 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
 
                 // افزودن ویژگی‌های محصول
                 List<ProductFeatures> productFeatures = new List<ProductFeatures>();
-                foreach (var item in request.Features)
+                foreach (var item in request.Features!)
                 {
                     productFeatures.Add(new ProductFeatures
                     {
-                        DisplayName = item.DisplayName,
-                        Value = item.Value,
+                        DisplayName = item.DisplayName!,
+                        Value = item.Value!,
                         Product = product,
                     });
                 }
@@ -113,7 +113,7 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
                     "Product",
                     product.Id,
                     $"محصول جدید {request.Name} افزوده شد",
-                    null, // برای ایجاد، oldValues null است
+                    "", // برای ایجاد، oldValues null است
                     JsonSerializer.Serialize(productData, new JsonSerializerOptions { WriteIndented = true })
                 );
 
@@ -177,25 +177,25 @@ namespace Web_Store.Application.Services.Products.Commands.AddNewProduct
     {
         public long Id { get; set; }
         public bool Status { get; set; }
-        public string FileNameAddress { get; set; }
+        public string? FileNameAddress { get; set; }
     }
 
     public class RequestAddNewProductDto
     {
-        public string Name { get; set; }
-        public string Brand { get; set; }
-        public string Description { get; set; }
+        public string? Name { get; set; }
+        public string? Brand { get; set; }
+        public string? Description { get; set; }
         public int Price { get; set; }
         public int Inventory { get; set; }
         public long CategoryId { get; set; }
         public bool Displayed { get; set; }
-        public List<IFormFile> Images { get; set; }
-        public List<AddNewProduct_Features> Features { get; set; }
+        public List<IFormFile>? Images { get; set; }
+        public List<AddNewProduct_Features>? Features { get; set; }
     }
 
     public class AddNewProduct_Features
     {
-        public string DisplayName { get; set; }
-        public string Value { get; set; }
+        public string? DisplayName { get; set; }
+        public string? Value { get; set; }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Web_Store.Application.Interfaces.FacadPatterns;
 using Web_Store.Application.Services.Logs.Commands;
-using Web_Store.Application.Services.Logs.FacadPattern;
 using Web_Store.Application.Services.Logs.Queries;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
@@ -11,13 +9,20 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class LogsController : Controller
     {
-        private readonly ILogFacad _logFacad;
+   
+        private readonly IGetLogsService _getLogsService;
+        private readonly IGetLogDetailsService _getLogDetailsService;
         private readonly IWebHostEnvironment _environment;
+        private readonly IClearLogsService _clearLogsService;
+        private readonly IExportLogsService _exportLogsService;
 
-        public LogsController(ILogFacad logFacad, IWebHostEnvironment environment)
+        public LogsController(IWebHostEnvironment environment, IGetLogsService getLogsService, IGetLogDetailsService getLogDetailsService, IClearLogsService clearLogsService, IExportLogsService exportLogsService)
         {
-            _logFacad = logFacad;
             _environment = environment;
+            _getLogsService = getLogsService;
+            _getLogDetailsService = getLogDetailsService;
+            _clearLogsService = clearLogsService;
+            _exportLogsService = exportLogsService;
         }
 
         public IActionResult Index(string searchKey = "", string entityName = "", string actionType = "",
@@ -30,7 +35,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
                
 
-                var result = _logFacad.GetLogsService.Execute(new RequestGetLogsDto
+                var result = _getLogsService.Execute(new RequestGetLogsDto
                 {
                     Page = page,
                     PageSize = pageSize,
@@ -75,7 +80,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             try
             {
-                var result = _logFacad.GetLogsService.Execute(request);
+                var result = _getLogsService.Execute(request);
                 return Json(new
                 {
                     success = result.IsSuccess,
@@ -99,7 +104,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             try
             {
-                var result = _logFacad.GetLogDetailsService.Execute(id);
+                var result = _getLogDetailsService.Execute(id);
 
                 if (!result.IsSuccess || result.Data == null)
                 {
@@ -130,7 +135,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                     });
                 }
 
-                var result = _logFacad.ClearLogsService.Execute(days);
+                var result = _clearLogsService.Execute(days);
 
                 return Json(new
                 {
@@ -162,7 +167,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                     });
                 }
 
-                var result = await _logFacad.ClearLogsService.ExecuteAsync(days);
+                var result = await _clearLogsService.ExecuteAsync(days);
 
                 return Json(new
                 {
@@ -194,7 +199,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                     });
                 }
 
-                var result = _logFacad.ExportLogsService.Execute(request);
+                var result = _exportLogsService.Execute(request);
 
                 if (result.IsSuccess)
                 {

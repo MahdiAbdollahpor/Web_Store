@@ -29,7 +29,7 @@ namespace Web_Store.Application.Services.Orders.Queries.IGetOrderInvoiceServiceF
         {
             var order = _context.Orders
                 .Include(p => p.User)
-                .Include(p => p.OrderDetails)
+                .Include(p => p.OrderDetails!)
                 .ThenInclude(p => p.Product)
                 .FirstOrDefault(p => p.Id == orderId);
 
@@ -42,9 +42,9 @@ namespace Web_Store.Application.Services.Orders.Queries.IGetOrderInvoiceServiceF
                 };
             }
 
-            var orderItems = order.OrderDetails.Select(od => new OrderItemDto
+            var orderItems = order.OrderDetails!.Select(od => new OrderItemDto
             {
-                ProductName = od.Product.Name,
+                ProductName = od.Product!.Name,
                 Price = od.Price,
                 Count = od.Count
             }).ToList();
@@ -53,7 +53,7 @@ namespace Web_Store.Application.Services.Orders.Queries.IGetOrderInvoiceServiceF
             {
                 OrderId = order.Id,
                 OrderDate = order.InsertTime,
-                UserFullName = order.User.FullName,
+                UserFullName = order.User!.FullName,
                 UserEmail = order.User.Email,
                 TotalAmount = orderItems.Sum(oi => oi.TotalPrice),
                 OrderItems = orderItems,
@@ -72,16 +72,16 @@ namespace Web_Store.Application.Services.Orders.Queries.IGetOrderInvoiceServiceF
     {
         public long OrderId { get; set; }
         public DateTime OrderDate { get; set; }
-        public string UserFullName { get; set; }
-        public string UserEmail { get; set; }
+        public string? UserFullName { get; set; }
+        public string? UserEmail { get; set; }
         public int TotalAmount { get; set; }
-        public List<OrderItemDto> OrderItems { get; set; }
-        public string OrderState { get; set; }
+        public List<OrderItemDto>? OrderItems { get; set; }
+        public string? OrderState { get; set; }
     }
 
     public class OrderItemDto
     {
-        public string ProductName { get; set; }
+        public string? ProductName { get; set; }
         public int Price { get; set; }
         public int Count { get; set; }
         public int TotalPrice => Price * Count;

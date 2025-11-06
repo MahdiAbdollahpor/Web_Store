@@ -12,10 +12,10 @@
             return context.Request.Cookies.ContainsKey(token);
         }
 
-        public string GetValue(HttpContext context, string token)
+        public string? GetValue(HttpContext context, string token)
         {
             string cookieValue;
-            if (!context.Request.Cookies.TryGetValue(token, out cookieValue))
+            if (!context.Request.Cookies.TryGetValue(token, out cookieValue!))
             {
                 return null;
             }
@@ -33,7 +33,7 @@
 
         public Guid GetBrowserId(HttpContext context)
         {
-            string browserId = GetValue(context, "BowserId");
+            string browserId = GetValue(context, "BowserId")!;
             if (browserId == null)
             {
                 string value = Guid.NewGuid().ToString();

@@ -26,7 +26,7 @@
 
                 <td>
                     <table>
-                        @foreach (var detail in item.OrderDetails)
+                        @foreach (var detail in item.OrderDetails!)
                         {
                             <tr style="border:outset">
                                 <td> @detail.ProductName</td>

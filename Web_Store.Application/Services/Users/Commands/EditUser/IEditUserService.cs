@@ -52,7 +52,7 @@ namespace Web_Store.Application.Services.Users.Commands.EditUser
                     UpdateTime = user.UpdateTime
                 };
 
-                user.FullName = request.Fullname;
+                user.FullName = request.Fullname!;
                 user.UpdateTime = DateTime.Now;
 
                 _context.SaveChanges();
@@ -97,6 +97,6 @@ namespace Web_Store.Application.Services.Users.Commands.EditUser
     public class RequestEdituserDto
     {
         public long UserId { get; set; }
-        public string Fullname { get; set; }
+        public string? Fullname { get; set; }
     }
 }

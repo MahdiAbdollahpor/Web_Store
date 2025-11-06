@@ -27,7 +27,7 @@ namespace Web_Store.Application.Services.Orders.Queries.GetOrderDetailsService
         public ResultDto<OrderDetailsDto> Execute(long orderId, long userId)
         {
             var order = _context.Orders
-                .Include(p => p.OrderDetails)
+                .Include(p => p.OrderDetails!)
                 .ThenInclude(p => p.Product)
                 .Include(p => p.RequestPay)
                 .Where(p => p.Id == orderId && p.UserId == userId)
@@ -37,13 +37,13 @@ namespace Web_Store.Application.Services.Orders.Queries.GetOrderDetailsService
                     OrderState = p.OrderState,
                     RequestPayId = p.RequestPayId,
                     InsertTime = p.InsertTime,
-                    OrderDetails = p.OrderDetails.Select(o => new OrderDetailItemDto
+                    OrderDetails = p.OrderDetails!.Select(o => new OrderDetailItemDto
                     {
                         Count = o.Count,
                         OrderDetailId = o.Id,
                         Price = o.Price,
                         ProductId = o.ProductId,
-                        ProductName = o.Product.Name,
+                        ProductName = o.Product!.Name,
                     }).ToList(),
                 })
                 .FirstOrDefault();
@@ -71,7 +71,7 @@ namespace Web_Store.Application.Services.Orders.Queries.GetOrderDetailsService
         public OrderState OrderState { get; set; }
         public long RequestPayId { get; set; }
         public DateTime InsertTime { get; set; }
-        public List<OrderDetailItemDto> OrderDetails { get; set; }
+        public List<OrderDetailItemDto>? OrderDetails { get; set; }
         public int TotalAmount => OrderDetails?.Sum(od => od.Price * od.Count) ?? 0;
     }
 
@@ -79,7 +79,7 @@ namespace Web_Store.Application.Services.Orders.Queries.GetOrderDetailsService
     {
         public long OrderDetailId { get; set; }
         public long ProductId { get; set; }
-        public string ProductName { get; set; }
+        public string? ProductName { get; set; }
         public int Price { get; set; }
         public int Count { get; set; }
         public int TotalPrice => Price * Count;

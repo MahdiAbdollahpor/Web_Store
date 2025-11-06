@@ -36,7 +36,7 @@ namespace Web_Store.Application.Services.Fainances.Queries.GetRequestPayForAdmin
                      PayDate = p.PayDate,
                      RefId = p.RefId,
                      UserId = p.UserId,
-                     UserName = p.User.FullName
+                     UserName = p.User!.FullName
                  }).ToList();
 
             return new ResultDto<List<RequestPayDto>>()
@@ -50,12 +50,12 @@ namespace Web_Store.Application.Services.Fainances.Queries.GetRequestPayForAdmin
     {
         public long Id { get; set; }
         public Guid Guid { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public long UserId { get; set; }
         public int Amount { get; set; }
         public bool IsPay { get; set; }
         public DateTime? PayDate { get; set; }
-        public string Authority { get; set; }
+        public string? Authority { get; set; }
         public long RefId { get; set; } = 0;
     }
 }

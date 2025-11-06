@@ -34,7 +34,7 @@ namespace Web_Store.Application.Services.Orders.Queries.GetOrdersForAdmin
                      InsetTime = p.InsertTime,
                      OrderId = p.Id,
                      OrderState = p.OrderState,
-                     ProductCount = p.OrderDetails.Count(),
+                     ProductCount = p.OrderDetails!.Count(),
                      RequestId = p.RequestPayId,
                      UserId = p.UserId,
                  }).ToList();

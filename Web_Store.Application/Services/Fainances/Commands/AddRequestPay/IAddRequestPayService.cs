@@ -30,7 +30,7 @@ namespace Web_Store.Application.Services.Fainances.Commands.AddRequestPay
                 Amount = Amount,
                 Guid = Guid.NewGuid(),
                 IsPay = false,
-                User = user,
+                User = user!,
                 Authority = "" // مقدار پیش فرض یا موقت
 
             };
@@ -43,7 +43,7 @@ namespace Web_Store.Application.Services.Fainances.Commands.AddRequestPay
                 {
                     guid = requestPay.Guid,
                     Amount = requestPay.Amount,
-                    Email = user.Email,
+                    Email = user!.Email,
                     RequestPayId = requestPay.Id,
                 },
                 IsSuccess = true,
@@ -55,7 +55,7 @@ namespace Web_Store.Application.Services.Fainances.Commands.AddRequestPay
     {
         public Guid guid { get; set; }
         public int Amount { get; set; }
-        public string Email { get; set; }
+        public string? Email { get; set; }
         public long RequestPayId { get; set; }
     }
 }

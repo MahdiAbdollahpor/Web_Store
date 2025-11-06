@@ -54,9 +54,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             }
 
             var invoiceData = _getRequestPayDetailService.Execute(id);
-            var fileName = $"Invoice_{invoiceData.Data.Id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+            var fileName = $"Invoice_{invoiceData.Data!.Id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
 
-            return File(result.Data, "application/pdf", fileName);
+            return File(result.Data!, "application/pdf", fileName);
         }
     }
 }
